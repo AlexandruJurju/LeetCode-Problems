@@ -261,6 +261,138 @@ public class Main {
 ////        return true;
 //    }
 
+    // 49. Group Anagrams
+    // use a hashmap that contains the sorted string as a key, and a list of all words that have the sorted characters as a value
+    // for each word in strs: sort the characters, check if hashmap contains the sorted word, if not then init a blank ArrayList, at the end add the word to the ArrayList using the key
+//    public List<List<String>> groupAnagrams(String[] strs) {
+//        HashMap<String, List<String>> anagramMap = new HashMap<>();
+//
+//        for (String word : strs) {
+//            char[] wordChars = word.toCharArray();
+//            Arrays.sort(wordChars);
+//            String sortedWord = new String(wordChars);
+//
+//            if (!anagramMap.containsKey(sortedWord)) {
+//                anagramMap.put(sortedWord, new ArrayList<>());
+//            }
+//            anagramMap.get(sortedWord).add(word);
+//        }
+//
+//        return new ArrayList<>(anagramMap.values());
+//    }
+
+    // 36. Valid Sudoku
+
+//    public boolean isValidSudoku(char[][] board) {
+//
+//        // HashSet solution
+//        // use a hashset to store all the seen values in the sudoku board
+//        // the square elements can be obtained by dividing row and col numbers by 3
+//        // 1, 2, 3 -> box 1; 4,5,6 -> box 2; 7,8,9 -> box 3
+//        HashSet<String> seen = new HashSet<>();
+//
+//        for (int i = 0; i < board.length; i++) {
+//            for (int j = 0; j < board[0].length; j++) {
+//                char elem = board[i][j];
+//                if (elem != '.') {
+//                    if (!seen.add(elem + "r" + i) || !seen.add(elem + "c" + j) || !seen.add(elem + "b" + i / 3 + j / 3)) {
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return true;
+//    }
+
+    // 128. Longest Consecutive Sequence
+
+//    public static int longestConsecutive(int[] nums) {
+//        // 1 - HashSet method
+//        // use a hashset that contains all numbers in the array
+//        // init an int value to be global longest = 0
+//        // for each number in the array: init an int currentMax that stores the maximum length of the current chain to 1
+//        // search the hashset for previous number, while set contains previous number, remove it from set, and increment currentMax
+//        // search the hashset for next number, while set contains the next number, remove it from set, and increment currentMax
+//        // at the end of the iteration, update maximum to be Math.max(longest,currentMax)
+////        HashSet<Integer> numSet = new HashSet<>();
+////
+////        for (int num : nums) {
+////            numSet.add(num);
+////        }
+////
+////        int longest = 0;
+////        for (int current : nums) {
+////            int next = current + 1;
+////            int prev = current - 1;
+////            int currentMax = 1;
+////
+////            while (numSet.contains(prev)) {
+////                numSet.remove(prev--);
+////                currentMax++;
+////            }
+////
+////            while (numSet.contains(next)) {
+////                numSet.remove(next++);
+////                currentMax++;
+////            }
+////
+////            longest = Math.max(longest, currentMax);
+////        }
+////        return longest;
+//    }
+
+    // 704. Binary Search
+//    public int search(int[] nums, int target) {
+////        int length = nums.length;
+////
+////        if (length == 0) {
+////            return -1;
+////        }
+////
+////        // length is total number of elements
+////        // right is the rightmost index, and because numbering is from 0, right should be length - 1
+////        int right = length - 1;
+////        int left = 0;
+////
+////        while (left <= right) {
+////            int middle = (left + right) / 2;
+////            int element = nums[middle];
+////
+////            if (element == target) {
+////                return middle;
+////            }
+////
+////            if (target < element) {
+////                right = middle - 1;
+////            }
+////
+////            if (target > element) {
+////                left = middle + 1;
+////            }
+////        }
+////
+////        return -1;
+////    }
+
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+
+        int col = 0, row = 0;
+        int rows = matrix.length, cols = matrix[0].length;
+
+        while (row < rows && col < cols) {
+            if (target > matrix[row][cols - 1]) {
+                row++;
+            } else {
+                col++;
+            }
+
+            if
+        }
+    }
+
+
     public static void main(String[] args) {
 //        int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
 //
@@ -278,6 +410,8 @@ public class Main {
 //
 //        System.out.println(addTwoNumbers(l11, l21).val);
 
-        System.out.println(isAnagram("rat", "car"));
+        int[] input = new int[]{0, 3, 7, 2, 5, 8, 4, 6, 0, 1};
+        System.out.println(longestConsecutive(input));
+
     }
 }
