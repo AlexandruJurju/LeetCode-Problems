@@ -1,5 +1,5 @@
-import java.util.*;
-
+import java.util.Scanner;
+import java.util.Stack;
 
 public class Main {
     public static class ListNode {
@@ -16,6 +16,25 @@ public class Main {
         ListNode(int val, ListNode next) {
             this.val = val;
             this.next = next;
+        }
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
         }
     }
 
@@ -375,43 +394,471 @@ public class Main {
 ////        return -1;
 ////    }
 
+    // 74. Search a 2D Matrix
+//    public static boolean searchMatrix(int[][] matrix, int target) {
+//
+//        // Method 1 - My Solution
+//        // the matrix is just multiple sorted arrays on different rows
+//        // for each row check if the target is <= than the element on the last column
+//        // basically if the target could potentially be found in the sorted row
+//        // an improvement could be to use BINARY SEARCH FOR THE ROW instead of iteratively searching the cols
+////        int col = 0, row = 0;
+////        int rows = matrix.length, cols = matrix[0].length;
+////
+////        while (row < rows) {
+////            if (target > matrix[row][cols - 1] && target < matrix[row][col]) {
+////                return false;
+////            }
+////
+////            if (target <= matrix[row][cols - 1]) {
+////                while (col < cols) {
+////                    if (matrix[row][col] == target) {
+////                        return true;
+////                    }
+////                    col++;
+////                }
+////                return false;
+////            }
+////            row++;
+////        }
+////        return false;
+//
+//        // Method 1.1 - Simpler conditions, start the search at the element in the last col
+//        // if element is < target then jump to next row
+//        // if element > target then decrement cols until you find the element or reach the first col without finding anything
+//
+////        int i = 0, j = matrix[0].length - 1;
+////        while (i < matrix.length && j >= 0) {
+////            if (matrix[i][j] == target)
+////                return true;
+////            else if (matrix[i][j] > target)
+////                j--;
+////            else if (matrix[i][j] < target)
+////                i++;
+////        }
+////        return false;
+//    }
 
-    public boolean searchMatrix(int[][] matrix, int target) {
+    // 240. Search a 2D Matrix II
+//    public boolean searchMatrix(int[][] matrix, int target) {
+//
+//        // Method 1 - use 2 pointers
+//        // start looking in the matrix from the bottom left element and value of current element
+//        // bottom left element was chosen because if we go up then there are only smaller values and if we go right there are bigger values
+//        // if current element < target then increment col index to find bigger number
+//        // if current element > target then increment row index to find lower number
+//
+//        int rows = matrix.length, cols = matrix[0].length;
+//        int row = matrix.length - 1, col = 0;
+//
+//        while (row >= 0 && col < cols) {
+//            int elem = matrix[row][col];
+//
+//            if (elem == target) {
+//                return true;
+//            }
+//
+//            if (target > elem) {
+//                col += 1;
+//            }
+//            if (target < elem) {
+//                row -= 1;
+//            }
+//        }
+//        return false;
+//    }
 
-        int col = 0, row = 0;
-        int rows = matrix.length, cols = matrix[0].length;
+    // 153. Find Minimum in Rotated Sorted Array
+//    public int findMin(int[] nums) {
+//        int left = 0;
+//        int right = nums.length - 1;
+//
+//        while (left <= right) {
+//            int middle = (left + right) / 2;
+//            int middleElement = nums[middle];
+//
+//            if (left == right) {
+//                return middleElement;
+//            }
+//
+//            if (middleElement > nums[right]) {
+//                left = middle + 1;
+//            } else {
+//                right = middle;
+//            }
+//
+//        }
+//
+//        return -1;
+//    }
 
-        while (row < rows && col < cols) {
-            if (target > matrix[row][cols - 1]) {
-                row++;
-            } else {
-                col++;
-            }
+    // 167. Two Sum II - Input Array Is Sorted
+//    public int[] twoSum(int[] numbers, int target) {
+    // Method 1
+//        // use 2 pointers, left and right to choose elements in the sorted array
+//        // if sum of num1 and num2 is bigger than the target then decrement right to lower the value of the sum
+//        // if sum of num1 and num2 is smaller than the target then increment left to raise the value of the sum
+//
+//        int left = 0, right = numbers.length - 1;
+//
+//        while (left <= right) {
+//            int sum = numbers[left] + numbers[right];
+//
+//            if (sum == target) {
+//                return new int[]{left + 1, right + 1};
+//            } else if (sum > target) {
+//                right--;
+//            } else {
+//                left++;
+//            }
+//        }
+//
+//        return new int[]{-1, -1};
+//    }
 
-            if
+
+    // Bubble Sort
+
+//    public static int[] bubbleSort(int[] arr) {
+//        int length = arr.length;
+//        for (int i = 0; i < length; i++) {
+//            // add -i to j limit to skip the last i items that were already sorted
+//            for (int j = 0; j < length - i - 1; j++) {
+//                if (arr[j] > arr[j+1]) {
+//                    int tmp = arr[j];
+//                    arr[j] = arr[j + 1];
+//                    arr[j + 1] = tmp;
+//                }
+//            }
+//        }
+//        return arr;
+//    }
+
+    // Insertion Sort
+
+//    public static int[] insertionSort(int[] arr) {
+//        int n = arr.length;
+//        for (int i = 1; i < n; ++i) {
+//            int key = arr[i];
+//            int j = i - 1;
+//
+//            // Move elements of arr[0..i-1], that are greater than key, to one position ahead  of their current position
+//            while (j >= 0 && arr[j] > key) {
+//                arr[j + 1] = arr[j];
+//                j = j - 1;
+//            }
+//            arr[j + 1] = key;
+//        }
+//        return arr;
+//    }
+
+    // Selection Sort
+
+//    public static int[] selectionSort(int[] arr) {
+//        int n = arr.length;
+//        for (int i = 0; i < n - 1; i++) {
+//            int minIndex = i;
+//            for (int j = i + 1; j < n; j++) {
+//                if (arr[minIndex] > arr[j]) {
+//                    minIndex = j;
+//                }
+//            }
+//
+//            int minNumber = arr[minIndex];
+//            arr[minIndex] = arr[i];
+//            arr[i] = minNumber;
+//        }
+//        return arr;
+//    }
+
+    // Merge Sort
+
+//    public static void mergeSort(int[] arr) {
+//        int length = arr.length;
+//
+//        if (length == 1) {
+//            return;
+//        }
+//
+//        int mid = length / 2;
+//
+//        int[] leftArray = new int[mid];
+//        int[] rightArray = new int[length - mid];
+//
+//        int j = 0;
+//        for (int i = 0; i < length; i++) {
+//            if (i < mid) {
+//                leftArray[i] = arr[i];
+//            } else {
+//                rightArray[j] = arr[i];
+//                j++;
+//            }
+//        }
+//
+//        mergeSort(leftArray);
+//        mergeSort(rightArray);
+//        merge(leftArray, rightArray, arr);
+//    }
+//
+//    private static void merge(int[] leftArray, int[] rightArray, int[] arr) {
+//        int leftSize = arr.length / 2;
+//        int rightSize = arr.length - leftSize;
+//        int i = 0, leftIndex = 0, rightIndex = 0;
+//
+//        while (leftIndex < leftSize && rightIndex < rightSize) {
+//            if (leftArray[leftIndex] < rightArray[rightIndex]) {
+//                arr[i] = leftArray[leftIndex];
+//                i++;
+//                leftIndex++;
+//            } else {
+//                arr[i] = rightArray[rightIndex];
+//                i++;
+//                rightIndex++;
+//            }
+//        }
+//
+//        while (leftIndex < leftSize) {
+//            arr[i] = leftArray[leftIndex];
+//            i++;
+//            leftIndex++;
+//        }
+//
+//        while (rightIndex < rightSize) {
+//            arr[i] = rightArray[rightIndex];
+//            i++;
+//            rightIndex++;
+//        }
+//    }
+
+    // Quick Sort
+    // moves smaller elements to left of a pivot and bigger elements to the right of the pivot
+    // recursively divide array in 2 partitions
+    // Time Complexity:
+    //      Best Case - O(n log(n))
+    //      Average Case - O (n log(n))
+    //      Worst Case - O (n^2)
+    // Space Complexity:
+    //      O(log(n))
+//    public static void quicksort(int[] arr, int low, int high) {
+//        if (low >= high) {
+//            return;
+//        }
+//
+//        int pivot = partition(arr, low, high);
+//        quicksort(arr, low, pivot - 1);
+//        quicksort(arr, pivot + 1, high);
+//    }
+//
+//    public static int partition(int[] arr, int low, int high) {
+//        int pivot = arr[high];
+//        int i = low - 1;
+//
+//        // use 2 pointers - i and j to swap elements
+//        // j - points to the current element in the given array
+//        // i - points to the biggest element to the left of j
+//        // when arr[j] < pivot then swap arr[i] and arr[j]
+//        // at the high, when all elements have been look at then swap arr[i] with arr[high], put the pivot so that
+//        // elements to the left are <= and elements to the right are >= than pivot value
+//
+//        for (int j = low; j <= high - 1; j++) {
+//            if (arr[j] < pivot) {
+//                i++;
+//                int temp = arr[i];
+//                arr[i] = arr[j];
+//                arr[j] = temp;
+//            }
+//        }
+//        i++;
+//        int temp = arr[i];
+//        arr[i] = arr[high];
+//        arr[high] = temp;
+//
+//        return i;
+//    }
+
+    // 20. Valid Parenthesis
+//    public static boolean isValid(String s) {
+//        // if length is not even then there is one extra bracket without a match -> not valid
+//        if (s.length() % 2 == 1) {
+//            return false;
+//        }
+//
+//        // Method 1
+//        // use a stack to store all open parentheses found in the string
+//        // loop over all chars in string, if it finds an open parenthesis it pushes it to the stack
+//        // when you find a closing parenthesis, pop the last element from the stack and check if it's a match )( ][ }{
+//        // if stack is empty when trying to pop then there are pairs without a match -> false
+//        // at the end check if stack still has elements in it, if there are values without a pair -> if yes return false
+//        Stack<Character> charStack = new Stack<>();
+//
+//        char[] chars = s.toCharArray();
+//        for (char c : chars) {
+//            if (c == '(' || c == '[' || c == '{') {
+//                charStack.push(c);
+//            } else {
+//                if (charStack.isEmpty()) {
+//                    return false;
+//                }
+//                char popped = charStack.pop();
+//
+//                if ((c == ')' && popped != '(') ||
+//                        (c == ']' && popped != '[') ||
+//                        (c == '}' && popped != '{')) {
+//                    return false;
+//                }
+//            }
+//        }
+//
+//
+//        return charStack.isEmpty();
+//    }
+
+    // 155. Min Stack
+    // use 2 stacks, one stack has normal behaviour and one is a min stack
+    // whenever an element is pushed on the normal stack check what the min value is and push the min value on the min stack
+//    class MinStack {
+//        Stack<Integer> normalStack;
+//        Stack<Integer> minStack;
+//
+//        public MinStack() {
+//            normalStack = new Stack<>();
+//            minStack = new Stack<>();
+//            minStack.push(Integer.MAX_VALUE);
+//        }
+//
+//        public void push(int val) {
+//            normalStack.push(val);
+//            minStack.push(Math.min(val, minStack.peek()));
+//        }
+//
+//        public void pop() {
+//            normalStack.pop();
+//            minStack.pop();
+//        }
+//
+//        public int top() {
+//            return normalStack.peek();
+//        }
+//
+//        public int getMin() {
+//            return minStack.peek();
+//        }
+//    }
+
+    // 226. Invert Binary Tree
+    public static TreeNode invertBinaryTree(TreeNode root) {
+        if (root == null) {
+            return root;
         }
+
+        invertBinaryTree(root.left);
+        invertBinaryTree(root.right);
+
+        // when the 2 recursion calls are done, the root node contains the edge left node and the edge right node
+        // swap the nodes before returning root
+        TreeNode tmp = root.left;
+        root.left = root.right;
+        root.right = tmp;
+
+        return root;
+    }
+
+    // 61. Rotate List | Diff: Medium | Tags: LinkedList, TwoPointers | Date: 17/10/2023 |
+    public static ListNode rotateRight(ListNode head, int k) {
+        // Method 1
+        // https://www.youtube.com/watch?v=UcGtPs2LE_c
+
+        // if head is null return null
+        if (head == null) {
+            return null;
+        }
+
+        // find length and tail node of the list
+        int length = 1;
+        ListNode tail = head;
+        while (tail.next != null) {
+            tail = tail.next;
+            length++;
+        }
+
+        // if number of rotates is multiple of k then the list stays the same, use k%length to find the number of real rotates
+        k = k % length;
+
+        // if k == 0 then number of rotates is divisible by k, so the resulting list would be the same
+        if (k == 0) {
+            return head;
+        }
+
+        // find the cutoff position in the linked list, the kth node from the tail of the list
+        ListNode current = head;
+        for (int i = 0; i < length - k - 1; i++) {
+            current = current.next;
+        }
+
+        ListNode newHead = current.next;
+        current.next = null;
+        tail.next = head;
+
+        return newHead;
+    }
+
+    //206. Reverse Linked List
+    public ListNode reverseList(ListNode head) {
+        ListNode current = head;
+        ListNode previous = null;
+
+        while (current != null) {
+            ListNode next = current.next;
+            current.next = previous;
+            previous = current;
+            current = next;
+        }
+
+        return previous;
+    }
+
+    public static int numIslands(char[][] grid) {
+        int islandCount = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == '1') {
+                    islandCount++;
+                    DFSSink(grid, i, j);
+                }
+            }
+        }
+        return islandCount;
+    }
+
+
+    // recursive DFS function
+    public static void DFSSink(char[][] grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] != '1') {
+            return;
+        }
+
+        grid[i][j] = '0';
+        DFSSink(grid, i + 1, j);
+        DFSSink(grid, i - 1, j);
+        DFSSink(grid, i, j + 1);
+        DFSSink(grid, i, j - 1);
+    }
+
+    public static void DFSSinkIterative(char[][] grid, int i, int j) {
+        Stack<> nextIsland = new Stack<Character>();
+        nextIsland.
     }
 
 
     public static void main(String[] args) {
-//        int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}};
+//        char[][] grid = {
+//                {'1', '1', '1', '1', '0'},
+//                {'1', '1', '0', '1', '0'},
+//                {'1', '1', '0', '0', '0'},
+//                {'0', '0', '0', '0', '0'}
+//        };
 //
-//        ListNode l13 = new ListNode(3);
-//        ListNode l12 = new ListNode(4);
-//        l12.next = l13;
-//        ListNode l11 = new ListNode(2);
-//        l11.next = l12;
-//
-//        ListNode l23 = new ListNode(4);
-//        ListNode l22 = new ListNode(6);
-//        l22.next = l23;
-//        ListNode l21 = new ListNode(5);
-//        l21.next = l22;
-//
-//        System.out.println(addTwoNumbers(l11, l21).val);
-
-        int[] input = new int[]{0, 3, 7, 2, 5, 8, 4, 6, 0, 1};
-        System.out.println(longestConsecutive(input));
+//        System.out.println(numIslands(grid));
 
     }
 }
