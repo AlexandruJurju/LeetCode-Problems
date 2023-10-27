@@ -1,5 +1,4 @@
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 public class Main {
     public static class ListNode {
@@ -301,13 +300,11 @@ public class Main {
 //    }
 
     // 36. Valid Sudoku
-
+    // HashSet solution
+    // use a hashset to store all the seen values in the sudoku board
+    // the square elements can be obtained by dividing row and col numbers by 3
+    // 1, 2, 3 -> box 1; 4,5,6 -> box 2; 7,8,9 -> box 3
 //    public boolean isValidSudoku(char[][] board) {
-//
-//        // HashSet solution
-//        // use a hashset to store all the seen values in the sudoku board
-//        // the square elements can be obtained by dividing row and col numbers by 3
-//        // 1, 2, 3 -> box 1; 4,5,6 -> box 2; 7,8,9 -> box 3
 //        HashSet<String> seen = new HashSet<>();
 //
 //        for (int i = 0; i < board.length; i++) {
@@ -320,7 +317,6 @@ public class Main {
 //                }
 //            }
 //        }
-//
 //        return true;
 //    }
 
@@ -746,119 +742,601 @@ public class Main {
 //    }
 
     // 226. Invert Binary Tree
-    public static TreeNode invertBinaryTree(TreeNode root) {
-        if (root == null) {
-            return root;
-        }
-
-        invertBinaryTree(root.left);
-        invertBinaryTree(root.right);
-
-        // when the 2 recursion calls are done, the root node contains the edge left node and the edge right node
-        // swap the nodes before returning root
-        TreeNode tmp = root.left;
-        root.left = root.right;
-        root.right = tmp;
-
-        return root;
-    }
+//    public static TreeNode invertBinaryTree(TreeNode root) {
+//        if (root == null) {
+//            return root;
+//        }
+//
+//        invertBinaryTree(root.left);
+//        invertBinaryTree(root.right);
+//
+//        // when the 2 recursion calls are done, the root node contains the edge left node and the edge right node
+//        // swap the nodes before returning root
+//        TreeNode tmp = root.left;
+//        root.left = root.right;
+//        root.right = tmp;
+//
+//        return root;
+//    }
 
     // 61. Rotate List | Diff: Medium | Tags: LinkedList, TwoPointers | Date: 17/10/2023 |
-    public static ListNode rotateRight(ListNode head, int k) {
-        // Method 1
-        // https://www.youtube.com/watch?v=UcGtPs2LE_c
-
-        // if head is null return null
-        if (head == null) {
-            return null;
-        }
-
-        // find length and tail node of the list
-        int length = 1;
-        ListNode tail = head;
-        while (tail.next != null) {
-            tail = tail.next;
-            length++;
-        }
-
-        // if number of rotates is multiple of k then the list stays the same, use k%length to find the number of real rotates
-        k = k % length;
-
-        // if k == 0 then number of rotates is divisible by k, so the resulting list would be the same
-        if (k == 0) {
-            return head;
-        }
-
-        // find the cutoff position in the linked list, the kth node from the tail of the list
-        ListNode current = head;
-        for (int i = 0; i < length - k - 1; i++) {
-            current = current.next;
-        }
-
-        ListNode newHead = current.next;
-        current.next = null;
-        tail.next = head;
-
-        return newHead;
-    }
+//    public static ListNode rotateRight(ListNode head, int k) {
+//        // Method 1
+//        // https://www.youtube.com/watch?v=UcGtPs2LE_c
+//
+//        // if head is null return null
+//        if (head == null) {
+//            return null;
+//        }
+//
+//        // find length and tail node of the list
+//        int length = 1;
+//        ListNode tail = head;
+//        while (tail.next != null) {
+//            tail = tail.next;
+//            length++;
+//        }
+//
+//        // if number of rotates is multiple of k then the list stays the same, use k%length to find the number of real rotates
+//        k = k % length;
+//
+//        // if k == 0 then number of rotates is divisible by k, so the resulting list would be the same
+//        if (k == 0) {
+//            return head;
+//        }
+//
+//        // find the cutoff position in the linked list, the kth node from the tail of the list
+//        ListNode current = head;
+//        for (int i = 0; i < length - k - 1; i++) {
+//            current = current.next;
+//        }
+//
+//        ListNode newHead = current.next;
+//        current.next = null;
+//        tail.next = head;
+//
+//        return newHead;
+//    }
 
     //206. Reverse Linked List
-    public ListNode reverseList(ListNode head) {
-        ListNode current = head;
-        ListNode previous = null;
+//    public ListNode reverseList(ListNode head) {
+//        ListNode current = head;
+//        ListNode previous = null;
+//
+//        while (current != null) {
+//            ListNode next = current.next;
+//            current.next = previous;
+//            previous = current;
+//            current = next;
+//        }
+//
+//        return previous;
+//    }
 
-        while (current != null) {
-            ListNode next = current.next;
-            current.next = previous;
-            previous = current;
-            current = next;
-        }
-
-        return previous;
-    }
-
-    public static int numIslands(char[][] grid) {
-        int islandCount = 0;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[0].length; j++) {
-                if (grid[i][j] == '1') {
-                    islandCount++;
-                    DFSSink(grid, i, j);
-                }
-            }
-        }
-        return islandCount;
-    }
-
+    // 200. Number of Islands
+//    public static int numIslands(char[][] grid) {
+//        int islandCount = 0;
+//        for (int i = 0; i < grid.length; i++) {
+//            for (int j = 0; j < grid[0].length; j++) {
+//                if (grid[i][j] == '1') {
+//                    islandCount++;
+//                    DFSSink(grid, i, j);
+//                }
+//            }
+//        }
+//        return islandCount;
+//    }
 
     // recursive DFS function
-    public static void DFSSink(char[][] grid, int i, int j) {
-        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] != '1') {
-            return;
-        }
+//    public static void DFSSink(char[][] grid, int i, int j) {
+//        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] != '1') {
+//            return;
+//        }
+//
+//        grid[i][j] = '0';
+//        DFSSink(grid, i + 1, j);
+//        DFSSink(grid, i - 1, j);
+//        DFSSink(grid, i, j + 1);
+//        DFSSink(grid, i, j - 1);
+//    }
+//
+//    public static void DFSSinkIterative(char[][] grid, int i, int j) {
+//        Pair<Integer, String> pair = new Pair<>(1, "One");
+//
+//    }
 
-        grid[i][j] = '0';
-        DFSSink(grid, i + 1, j);
-        DFSSink(grid, i - 1, j);
-        DFSSink(grid, i, j + 1);
-        DFSSink(grid, i, j - 1);
-    }
+    // 21. Merge Two Sorted Lists
+//    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+//        // Method 1
+//        // make a dummy list, use a loop while the 2 lists are still not null, check current values of each list
+//        // if val1<=val2 then dummy.next is list1, advance list1, advance dummy
+//        // else dummy.next = list2, advance list2, advance dummy
+//        // when exiting loop, at least one list will be null, add the remained of the other list to the dummy
+//
+//        if (list1 == null) {
+//            return list2;
+//        }
+//        if (list2 == null) {
+//            return list1;
+//        }
+//
+//        ListNode newHead = new ListNode();
+//        ListNode dummy = newHead;
+//
+//        while (list1 != null && list2 != null) {
+//            int val1 = list1.val;
+//            int val2 = list2.val;
+//
+//            if (val1 <= val2) {
+//                dummy.next = list1;
+//                list1 = list1.next;
+//            } else {
+//                dummy.next = list2;
+//                list2 = list2.next;
+//            }
+//            dummy = dummy.next;
+//        }
+//
+////        while (list1 != null) {
+////            dummy.next = list1;
+////            list1 = list1.next;
+////        }
+////
+////        while (list2 != null) {
+////            dummy.next = list2;
+////            list2 = list2.next;
+////        }
+//
+//        if (list1 != null) {
+//            dummy.next = list1;
+//        }
+//        if (list2 != null) {
+//            dummy.next = list2;
+//        }
+//
+//        return newHead.next;
+//    }
 
-    public static void DFSSinkIterative(char[][] grid, int i, int j) {
-        Stack<> nextIsland = new Stack<Character>();
-        nextIsland.
-    }
+    // 700. Search in a Binary Search Tree
+//    public TreeNode searchBST(TreeNode root, int val) {
+//        if (root == null) {
+//            return null;
+//        }
+//
+//        if (root.val == val) {
+//            return root;
+//        }
+//
+//        if (root.val > val) {
+//            return searchBST(root.left, val);
+//        } else {
+//            return searchBST(root.right, val);
+//        }
+//    }
 
+
+    // 104. Maximum Depth of Binary Tree
+//    public int maxDepth(TreeNode root) {
+//        if (root == null) {
+//            return 0;
+//        }
+//
+//        return Math.max(maxDepth(root.left) + 1, maxDepth(root.right) + 1);
+//    }
+
+
+    // 94. Binary Tree Inorder Traversal - Inorder S,R,D
+    // Method 1. Recursive with another function
+//    public List<Integer> inorderTraversal(TreeNode root) {
+//        List<Integer> list = new ArrayList<Integer>();
+//        inorder(root, list);
+//        return list;
+//    }
+//
+//    public void inorder(TreeNode root, List<Integer> nums) {
+//        if (root == null) return;
+//        inorder(root.left, nums);
+//        nums.add(root.val);
+//        inorder(root.right, nums);
+//    }
+
+    // Method 2. Iterative method
+//    public List<Integer> inorderTraversal(TreeNode root) {
+//        List<Integer> list = new ArrayList<Integer>();
+//        Stack<TreeNode> stack = new Stack<TreeNode>();
+//        TreeNode cur = root;
+//
+//        while (cur != null || !stack.empty()) {
+//            while (cur != null) {
+//                stack.add(cur);
+//                cur = cur.left;
+//            }
+//            cur = stack.pop();
+//            list.add(cur.val);
+//            cur = cur.right;
+//        }
+//
+//        return list;
+//    }
+
+    // 98. Validate Binary Search Tree
+//    public boolean isValidBST(TreeNode root) {
+//        // Method 1. Use Inorder search, if values in the list are NOT sorted then it's not a BST
+//        ArrayList<Integer> list = new ArrayList<>();
+//        inorder(root, list);
+//
+//        for (int i = 1; i < list.size() - 1; i++) {
+//            if (!(list.get(i - 1) < list.get(i) && list.get(i) < list.get(i + 1))) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+//
+//    public void inorder(TreeNode root, List<Integer> nums) {
+//        if (root == null) return;
+//        inorder(root.left, nums);
+//        nums.add(root.val);
+//        inorder(root.right, nums);
+//    }
+
+    // 1929. Concatenation of Array
+    // Method - init result array with empty array of size nums.length*2
+    // result[i] = arr[i], result[i+length] = arr[i]
+//    public static int[] getConcatenation(int[] nums) {
+//        int length = nums.length;
+//        int[] result = new int[length * 2];
+//
+//        for (int i = 0; i < length; i++) {
+//            result[i] = nums[i];
+//            result[i + length] = nums[i];
+//        }
+//
+//        return result;
+//    }
+
+    // 27. Remove Element | Diff: Easy | Tags: Array, Two Pointers | Date: 25/10/2023
+    // Method 1 - use an index to keep track of the numbers of val values AND as a pointer to the current element in nums to be replaced
+//    public static int removeElement(int[] nums, int val) {
+//        int index = 0;
+//
+//        for (int i = 0; i < nums.length; i++) {
+//            if (nums[i] != val) {
+//                nums[index] = nums[i];
+//                index++;
+//            }
+//        }
+//
+//        return index;
+//    }
+
+
+    // 26. Remove Duplicates from Sorted Array
+    // https://leetcode.com/problems/remove-duplicates-from-sorted-array/solutions/3676877/best-method-100-c-java-python-beginner-friendly/
+    // The Intuition is to use two pointers, i and j, to iterate through the array. The variable j is used to keep track of the current index where a unique element should be placed. The initial value of j is 1 since the first element in the array is always unique and doesn't need to be changed
+//    public int removeDuplicates(int[] nums) {
+//        int j = 1;
+//        for (int i = 1; i < nums.length; i++) {
+//            if (nums[i] != nums[i - 1]) {
+//                nums[j] = nums[i];
+//                j++;
+//            }
+//        }
+//        return j;
+//    }
+
+    // 682. Baseball Game | Diff: Easy | Tags: Stack | Date: 25/10/2023
+//    public static int calPoints(String[] operations) {
+//        Stack<Integer> vals = new Stack<Integer>();
+//        int total = 0;
+//
+//        for (String s : operations) {
+//            switch (s) {
+//                case "+" -> {
+//                    int num1 = vals.pop();
+//                    int res = (vals.peek() + num1);
+//                    vals.push(num1);
+//                    vals.push(res);
+//                }
+//                case "D" -> vals.push(vals.peek() * 2);
+//                case "C" -> vals.pop();
+//                default -> vals.push(Integer.valueOf(s));
+//            }
+//        }
+//
+//        while (!vals.isEmpty()) {
+//            total += vals.pop();
+//        }
+//
+//        return total;
+//    }
+
+    // 707. Design Linked List
+//    public class Node {
+//        int val;
+//        Node next;
+//
+//        public Node(int val) {
+//            this.val = val;
+//        }
+//    }
+//
+//    class MyLinkedList {
+//
+//        Node head;
+//        int length;
+//
+//        public MyLinkedList() {
+//            head = null;
+//            length = 0;
+//        }
+//
+//        public int get(int index) {
+//            if (index > length) {
+//                return -1;
+//            }
+//
+//            int count = 0;
+//            Node current = head;
+//            while (count < index) {
+//                count++;
+//                current = current.next;
+//            }
+//            return current.val;
+//        }
+//
+//        public void addAtHead(int val) {
+//            Node newHead = new Node(val);
+//            newHead.next = head;
+//            head = newHead;
+//        }
+//
+//        public void addAtTail(int val) {
+//            Node tail = head;
+//            while (tail.next != null) {
+//                tail = tail.next;
+//            }
+//            tail.next = new Node(val);
+//        }
+//
+//        public void addAtIndex(int index, int val) {
+//            if (index > length)
+//                return;
+//            if (index == 0)
+//                addAtHead(val);
+//            else {
+//                int counter = 1;
+//                Node temp = head;
+//                while (counter < index) {
+//                    temp = temp.next;
+//                    counter++;
+//                }
+//                Node newNode = new Node(val);
+//                Node next = temp.next;
+//                temp.next = newNode;
+//                newNode.next = next;
+//                length++;
+//            }
+//        }
+//
+//        public void deleteAtIndex(int index) {
+//            if (index >= length) {
+//                return;
+//            }
+//            if (index == 0) {
+//                head = head.next;
+//                length--;
+//            } else {
+//                int counter = 1;
+//                Node temp = head;
+//                while (counter < index) {
+//                    temp = temp.next;
+//                    counter++;
+//                }
+//                temp.next = temp.next.next;
+//                length--;
+//            }
+//        }
+//    }
+
+    // 347. Top K Frequent Elements
+    // Method 1. Use a maxheap
+//    public static int[] topKFrequent(int[] nums, int k) {
+//        Map<Integer, Integer> map = new HashMap<>();
+//        for (int val : nums) {
+//            map.put(val, map.getOrDefault(val, 0) + 1);
+//        }
+//
+//        // define the priority of the queue, max value
+//        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> map.get(b) - map.get(a));
+//        maxHeap.addAll(map.keySet());
+//
+//        int[] res = new int[k];
+//        for (int i = 0; i < k; i++) {
+//            res[i] = maxHeap.poll();
+//        }
+//        return res;
+//    }
+
+
+    // 238. Product of Array Except Self
+    // Method 1 -
+    // For each number calculate a prefix product of all elements before the value, and postfix product of all elements after the value
+    // The product of all values except self is the previous value in prefix and the next value in postfix
+//    public static int[] productExceptSelf(int[] nums) {
+//        int length = nums.length;
+//        int[] prefix = new int[length], postfix = new int[length], res = new int[length];
+//
+//        prefix[0] = nums[0];
+//        postfix[length - 1] = nums[length - 1];
+//
+//        for (int i = 1; i < length; i++) {
+//            prefix[i] = prefix[i - 1] * nums[i];
+//        }
+//
+//        for (int i = length - 2; i >= 0; i--) {
+//            postfix[i] = postfix[i + 1] * nums[i];
+//        }
+//
+//        for (int i = 0; i < length; i++) {
+//            int pref = 1;
+//            int post = 1;
+//            if (i > 0) {
+//                pref = prefix[i - 1];
+//            }
+//            if (i < length - 1) {
+//                post = postfix[i + 1];
+//            }
+//
+//            res[i] = pref * post;
+//        }
+//
+//        return res;
+//    }
+
+    // Method 1 - Use 2 pointers, left and right, if character is not letter or digit then advance it
+//    public static boolean isPalindrome(String s) {
+//        if (s.isEmpty()) {
+//            return true;
+//        }
+//
+//        int left = 0;
+//        int right = s.length() - 1;
+//        while (left <= right) {
+//            char leftChar = s.charAt(left);
+//            char rightChar = s.charAt(right);
+//            if (!Character.isLetterOrDigit(leftChar)) {
+//                left++;
+//            } else if (!Character.isLetterOrDigit(rightChar)) {
+//                right--;
+//            } else {
+//                if (Character.toLowerCase(leftChar) != Character.toLowerCase(rightChar)) {
+//                    return false;
+//                }
+//                left++;
+//                right--;
+//            }
+//        }
+//
+//        return true;
+//    }
+
+    // Method 2 - use string buffer to reverse the string and compare it to the original one, if it's different then it's not a palindrome
+//    public boolean isPalindrome(String s) {
+//        String actual = s.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+//        String rev = new StringBuffer(actual).reverse().toString();
+//        return actual.equals(rev);
+//    }
+
+
+    // 150. Evaluate Reverse Polish Notation
+    // Method 1 - If it's a number add it to the stack, if it's an operator pop 2 values, apply operator, push result to the stack
+//    public static int evalRPN(String[] tokens) {
+//        Stack<Integer> stack = new Stack<>();
+//        for (String token : tokens) {
+//            switch (token) {
+//                case "+" -> {
+//                    int val1 = stack.pop();
+//                    int val2 = stack.pop();
+//                    stack.push(val2 + val1);
+//                }
+//                case "-" -> {
+//                    int val1 = stack.pop();
+//                    int val2 = stack.pop();
+//                    stack.push(val2 - val1);
+//                }
+//                case "*" -> {
+//                    int val1 = stack.pop();
+//                    int val2 = stack.pop();
+//                    stack.push(val2 * val1);
+//                }
+//
+//                case "/" -> {
+//                    int val1 = stack.pop();
+//                    int val2 = stack.pop();
+//                    stack.push(val2 / val1);
+//                }
+//
+//                default -> stack.push(Integer.valueOf(token));
+//            }
+//        }
+//        return stack.pop();
+//    }
+
+    // 22. Generate Parentheses | Diff: Medium | Tags: Backtracking
+    // Method 1 - Use backtracking
+    // https://leetcode.com/problems/generate-parentheses/solutions/3512769/c-java-python-javascript-using-recursion-with-explanation/
+    // We define a helper function, generateParentheses, that takes the following parameters:
+    //result: a reference to the vector of strings where we store the generated combinations.
+    //current: the current combination being generated.
+    //open: the count of opening parentheses "(" included in the current combination.
+    //close: the count of closing parentheses ")" included in the current combination.
+    //n: the total number of pairs of parentheses to be included.
+    //In the generateParentheses function, we first check if the length of the current string is equal to 2n. If it is, we have generated a valid combination, so we add it to the result vector and return.
+    //If the length of current is not equal to 2n, we have two choices:
+    //If the count of opening parentheses open is less than n, we can add an opening parenthesis to the current combination and make a recursive call to generateParentheses, incrementing the open count by 1.
+    //If the count of closing parentheses close is less than the open count, we can add a closing parenthesis to the current combination and make a recursive call to generateParentheses, incrementing the close count by 1.
+    //In the generateParenthesis function, we initialize an empty result vector and call the generateParentheses function with the initial values of current as an empty string, open and close counts as 0, and n as the input value.
+    //Finally, we return the result vector containing all the generated combinations of well-formed parentheses.
+//    public List<String> generateParenthesis(int n) {
+//        List<String> res = new ArrayList<String>();
+//        backtrack(res, "", 0, 0, n);
+//        return res;
+//    }
+//
+//    private void backtrack(List<String> results, String current, int open, int closed, int max) {
+//        if (current.length() == max * 2) {
+//            results.add(current);
+//            return;
+//        }
+//
+//        if (open < max) {
+//            backtrack(results, current + "(", open + 1, closed, max);
+//        }
+//
+//        if (closed < open) {
+//            backtrack(results, current + ")", open, closed + 1, max);
+//        }
+//
+//    }
+
+
+    // 739. Daily Temperatures | Diff: Medium | Tags: Stack, Monotonic Stack ???
+//    public int[] dailyTemperatures(int[] temperatures) {
+//
+//    }
+
+
+    // 875. Koko Eating Bananas
+    // Method 1 - Use a binary search for piles value, start search at the middle value (k) between min of piles (1) and max of piles
+    // Loop the array and find the number of hours it takes koko to eat all piles for current k
+    // if current time is bigger than h then increase k
+    // if current time is lower than h then decrease k
+    // at the end return left value
+//    public static int minEatingSpeed(int[] piles, int h) {
+//        int left = 1;
+//        // int right = Arrays.streams(piles).max.asInt(); is slower
+//        int right = 1000000000;
+//
+//        while (left <= right) {
+//            int mid = (left + right) / 2;
+//            int currentH = 0;
+//            for (int i = 0; i < piles.length; i++) {
+//                currentH += Math.ceil(1.0 * piles[i] / mid);
+//            }
+//            if (currentH > h) {
+//                left = mid + 1;
+//            } else {
+//                right = mid - 1;
+//            }
+//        }
+//        return left;
+//    }
 
     public static void main(String[] args) {
-//        char[][] grid = {
-//                {'1', '1', '1', '1', '0'},
-//                {'1', '1', '0', '1', '0'},
-//                {'1', '1', '0', '0', '0'},
-//                {'0', '0', '0', '0', '0'}
-//        };
-//
-//        System.out.println(numIslands(grid));
+        int[] nums = new int[]{30, 11, 23, 4, 20};
+        String[] vals = new String[]{"4", "13", "5", "/", "+"};
+
 
     }
 }
