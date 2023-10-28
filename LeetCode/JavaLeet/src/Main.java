@@ -1333,10 +1333,151 @@ public class Main {
 //        return left;
 //    }
 
+    // 3. Longest Substring Without Repeating Characters | Tags: Sliding Window, Hash Table
+    // Method 1 - use 2 pointers to move in the array and a hashset to store the seen characters
+    // when you see a character that isn't in the hashset add it and increase right index, recalculate max with current hashset size
+    // when you see a character that is in the hashset, remove it, increase left pointer
+//    public static int lengthOfLongestSubstring(String s) {
+//        HashSet<Character> hashSet = new HashSet<>();
+//        int i = 0;
+//        int j = 0;
+//        int max = 0;
+//
+//        while (j < s.length()) {
+//            if (hashSet.contains(s.charAt(j))) {
+//                hashSet.remove(s.charAt(i));
+//                i++;
+//            } else {
+//                hashSet.add(s.charAt(j));
+//                j++;
+//                max = Math.max(max, hashSet.size());
+//            }
+//        }
+//        return max;
+//    }
+
+    // 110. Balanced Binary Tree
+    // | heightLeftSubtree - heightRightSubtree | <= 1
+    // use max height function for each node in the tree
+//    public int height(TreeNode root) {
+//        if (root == null) {
+//            return 0;
+//        }
+//
+//        return Math.max(height(root.left) + 1, height(root.right) + 1);
+//    }
+//
+//    public boolean isBalanced(TreeNode root) {
+//        if (root == null) {
+//            return true;
+//        }
+//        if (Math.abs(height(root.left) - height(root.right)) > 1) {
+//            return false;
+//        } else {
+//            return isBalanced(root.left) && isBalanced(root.right);
+//        }
+//    }
+
+    // 100. Same Tree
+    // Method 1 - Recursive method
+    // https://leetcode.com/problems/same-tree/solutions/3746149/recursive-approach-with-easy-steps/
+//    public boolean isSameTree(TreeNode p, TreeNode q) {
+//        if (p != null && q != null) {
+//            return p.val == q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+//        } else {
+//            return p == q;
+//        }
+//    }
+
+//    public boolean isSameTree(TreeNode p, TreeNode q) {
+//        if (p == null && q == null) // Same Tree
+//            return true;
+//        if (p == null || q == null) // Different Size
+//            return false;
+//        if (p.val != q.val) // Different Nodes
+//            return false;
+//        return isSameTree(p.left, q.left) && // check left subtree
+//                isSameTree(p.right, q.right); // check right subtree
+//    }
+
+    // Method 2 - Iterative ???
+
+
+    // 572. Subtree of Another Tree
+    // Method 1 - recursive use isSameTree function
+//    public boolean isSameTree(TreeNode p, TreeNode q) {
+//        if (p == null && q == null) {
+//            return true;
+//        }
+//
+//        if (p == null || q == null || p.val != q.val) {
+//            return false;
+//        }
+//
+//        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+//    }
+//
+//    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+//        if (subRoot == null) {
+//            return true;
+//        }
+//
+//        if (root == null) {
+//            return false;
+//        }
+//
+//        return isSameTree(root, subRoot) || isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+//    }
+
+    // 78. Subsets
+    // Method 1 - backtracking loop from index to num length
+//    public static List<List<Integer>> subsets(int[] nums) {
+//        List<List<Integer>> result = new ArrayList<>();
+//        List<Integer> current = new ArrayList<>();
+//        int index = 0;
+//
+//        backtrack(result, current, index, nums);
+//        return result;
+//    }
+//
+//    public static void backtrack(List<List<Integer>> results, List<Integer> current, int index, int[] nums) {
+//        results.add(new ArrayList<>(current));
+//
+//        for (int i = index; i < nums.length; i++) {
+//            current.add(nums[i]);
+//            backtrack(results, current, i + 1, nums);
+//            current.remove(current.size() - 1);
+//        }
+//    }
+
+
+    // 39. Combination Sum
+//    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+//        List<List<Integer>> result = new ArrayList<>();
+//        backtrack(result, new ArrayList<>(), candidates, target, 0);
+//        return result;
+//    }
+//
+//    public void backtrack(List<List<Integer>> result, List<Integer> temp, int[] candidates, int remainder, int index) {
+//        if (remainder == 0) {
+//            result.add(new ArrayList<>(temp));
+//        }
+//
+//        if (remainder < 0) {
+//            return;
+//        }
+//
+//        for (int i = index; i < candidates.length; i++) {
+//            temp.add(candidates[i]);
+//            // not i+1 because same candidate can be reused
+//            backtrack(result, temp, candidates, remainder - candidates[i], i);
+//            temp.remove(temp.size() - 1);
+//        }
+//    }
+
     public static void main(String[] args) {
         int[] nums = new int[]{30, 11, 23, 4, 20};
         String[] vals = new String[]{"4", "13", "5", "/", "+"};
-
-
+        String test = "abcabcbb";
     }
 }
