@@ -959,27 +959,6 @@ public class Main {
 //        return list;
 //    }
 
-    // 98. Validate Binary Search Tree
-//    public boolean isValidBST(TreeNode root) {
-//        // Method 1. Use Inorder search, if values in the list are NOT sorted then it's not a BST
-//        ArrayList<Integer> list = new ArrayList<>();
-//        inorder(root, list);
-//
-//        for (int i = 1; i < list.size() - 1; i++) {
-//            if (!(list.get(i - 1) < list.get(i) && list.get(i) < list.get(i + 1))) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-//
-//    public void inorder(TreeNode root, List<Integer> nums) {
-//        if (root == null) return;
-//        inorder(root.left, nums);
-//        nums.add(root.val);
-//        inorder(root.right, nums);
-//    }
-
     // 1929. Concatenation of Array
     // Method - init result array with empty array of size nums.length*2
     // result[i] = arr[i], result[i+length] = arr[i]
@@ -1450,6 +1429,30 @@ public class Main {
 //        }
 //    }
 
+    // Method 2 - changed backtrack function
+//    public static List<List<Integer>> subsets(int[] nums) {
+//        List<List<Integer>> result = new ArrayList<>();
+//        List<Integer> current = new ArrayList<>();
+//        int index = 0;
+//
+//        backtrack(result, current, index, nums);
+//        return result;
+//    }
+//
+//    public static void backtrack(List<List<Integer>> results, List<Integer> current, int index, int[] nums) {
+//        if (index == nums.length) {
+//            results.add(new ArrayList<>(current));
+//            return;
+//        }
+//
+//        current.add(nums[index]);
+//        backtrack(results, current, index + 1, nums);
+//
+//        current.remove(current.size() - 1);
+//        backtrack(results, current, index + 1, nums);
+//
+//    }
+
 
     // 39. Combination Sum
 //    public List<List<Integer>> combinationSum(int[] candidates, int target) {
@@ -1473,6 +1476,37 @@ public class Main {
 //            backtrack(result, temp, candidates, remainder - candidates[i], i);
 //            temp.remove(temp.size() - 1);
 //        }
+//    }
+
+
+    // 46. Permutations
+//    public static List<List<Integer>> permute(int[] nums) {
+//        List<List<Integer>> solution = new ArrayList<>();
+//        backtrack(solution, new ArrayList<>(), 0, nums);
+//        return solution;
+//    }
+//
+//    public static void backtrack(List<List<Integer>> solution, List<Integer> temp, int index, int[] nums) {
+//        if (temp.size() == nums.length) {
+//            solution.add(new ArrayList<>(temp));
+//        }
+//
+//        for (int i = index; i < nums.length; i++) {
+//            if (temp.contains(nums[i])) {
+//                continue;
+//            }
+//            temp.add(nums[i]);
+//            backtrack(solution, temp, index, nums);
+//            temp.remove(temp.size() - 1);
+//        }
+//    }
+
+//    public boolean exist(char[][] board, String word) {
+//
+//    }
+//
+//    public boolean backtrack() {
+//
 //    }
 
     public static void main(String[] args) {
