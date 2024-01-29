@@ -1,22 +1,26 @@
-﻿namespace CSharpLeet {
-    class Solution {
-        public int NumIslands(char[][] grid) {
-            int numIslands = 0;
-            for (int i = 0; i < grid.Length; i++) {
-                for (int j = 0; j < grid[0].Length; j++) {
-
-                }
+﻿namespace CSharpLeet
+{
+    class Solution
+    {
+        public static int[] TwoSum(int[] nums, int target)
+        {
+            Dictionary<int, int> remainder = new Dictionary<int, int>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                remainder.Add(i, nums[i] - target);
             }
 
-            return numIslands;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (remainder.ContainsValue(nums[i]))
+                {
+                    return new []{i,remainder}
+                }
+            }
         }
 
-        public void DFSRemove(char[][] grid, int i, int j) {
-            Stack<KeyValuePair<int, int>> st = new Stack<KeyValuePair<int, int>>();
-            
-        }
-
-        static void Main(string[] args) {
+        static void Main(string[] args)
+        {
             Console.WriteLine("Hello, .NET Core!");
         }
     }
