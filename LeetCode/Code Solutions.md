@@ -61,6 +61,7 @@ the value of the node will be sum % 10 to get the smaller val
 the value of carry will be sum / 10
 make a new node with the value = sum%10 and
 
+```
 public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 	int carry = 0;
 	ListNode dummyHead = new ListNode();
@@ -91,6 +92,7 @@ public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 
 	return dummyHead.next;
 }
+```
 
 # 3. Longest Substring Without Repeating Characters
 ##
@@ -119,6 +121,78 @@ public static int lengthOfLongestSubstring(String s) {
 	return max;
 }
 ```
+
+# 11. Container With Most Water
+## Diff: Medium | Tags: Two Pointers, Greedy
+### Java
+#### Method 1 - Use 2 pointers to find area of rectangle
+Using a left and right pointer find the area of the rectangle formed by the heights
+the floor is right - left, the distance between the indexes
+the wall size is the minimum between the 2 walls (if its the max water can fall out of our rectangle :) )
+```
+public int maxArea(int[] height) {
+	int left = 0;
+	int right = height.length - 1;
+
+	int maxArea = 0;
+	while (left < right) {
+		// calculate the area of the rectangle formed by the 2 heights
+		// right - left is the floor and Math.min find the minimum wall length (water falls out if we choose the bigger wall from them :) )
+		int currentArea = (right - left) * (Math.min(height[left], height[right]));
+		maxArea = Math.max(maxArea, currentArea);
+
+		// continue the search to find a better wall
+		if (height[left] < height[right]) {
+			left++;
+		} else {
+			right--;
+		}
+	}
+	return maxArea;
+}
+```
+
+# 15. 3Sum
+## Dif: Medium | Tags: Two Pointers, Binary Search
+### Java
+#### Method 1 - Two Pointers
+Similar to #167 TwoSum when array is sorted, but the third value doesnt change,
+Use 2 loops, first one sets the pole value and the second loop is the TwoSum solution with left = poleIndex+1 and right = array.Length-1
+```
+public List<List<Integer>> threeSum(int[] nums) {
+	// needs to be sorted to work, like TwoSum sorted #167
+	Arrays.sort(nums);
+
+	// use set to remember DISTINCT solutions
+	Set<List<Integer>> intermediaryResults = new HashSet<>();
+
+	int target = 0;
+
+	for (int pole = 0; pole < nums.length; pole++) {
+		int left = pole + 1;
+		int right = nums.length - 1;
+		while (left < right) {
+			int sum = nums[pole] + nums[left] + nums[right];
+			if (sum == target) {
+				intermediaryResults.add(Arrays.asList(nums[pole], nums[left], nums[right]));
+				left++;
+				right--;
+			}
+
+			if (sum > target) {
+				right--;
+			}
+
+			if (sum < target) {
+				left++;
+			}
+		}
+	}
+	return new ArrayList<>(intermediaryResults);
+}
+```
+
+#### Method 2 - Two Pointers Enchanced https://www.nileshblog.tech/leet-code-three-3-sum-java-cpp-python-solution/#Java_Two_Pointer_Approach
 
 # 20. Valid Parenthesis
 ##
@@ -625,6 +699,56 @@ public boolean isBalanced(TreeNode root) {
 }
 ```
 
+# 125.
+## Diff: Easy
+### Java
+#### Method 1 - Two Pointers
+Use 2 pointers, left and right, to loop over the string and check if the characters are same
+```
+public boolean isPalindrome(String s) {
+
+	if (s.isEmpty()) {
+		return true;
+	}
+
+	char[] chars = s.toCharArray();
+	int left = 0;
+	int right = s.length() - 1;
+	while (left < right) {
+		// use 2 pointers
+		char leftChar = chars[left];
+		char rightChar = chars[right];
+
+		// move left pointer to the right until you find a character
+		while (left < s.length() - 1 && !Character.isLetterOrDigit(leftChar)) {
+			left++;
+			leftChar = chars[left];
+		}
+
+		// move right pointer to the left until you find a character
+		while (right > 0 && !Character.isLetterOrDigit(rightChar)) {
+			right--;
+			rightChar = chars[right];
+		}
+	
+		// if left > right that means that there were characters that werent letters inside the string
+		if (left > right) {
+			return true;
+		}
+
+		// if characters are different then not palindrome
+		if (Character.toLowerCase(chars[left]) != Character.toLowerCase(chars[right])) {
+			return false;
+		}
+
+		// same characters -> move pointers for next iteration
+		left++;
+		right--;
+	}
+	return true;
+}
+```
+
 # 128. Longest Consecutive Sequence
 ## Diff: Medium | Tags: Array, Hash Table, Union Find
 ### Java
@@ -735,26 +859,39 @@ public int findMin(int[] nums) {
 ###
 #### Method 1 - use 2 pointers
 use 2 pointers, left and right to choose elements in the sorted array
-if sum of num1 and num2 is bigger than the target then decrement right to lower the value of the sum
-if sum of num1 and num2 is smaller than the target then increment left to raise the value of the sum
+calculate sum as numbers[left] + numbers[right]
+if target > sum it means that sum needs to grow, and since right already points to the biggest possible element, increment left pointer to increase sum value
+if target < sum, that means that sum need to be smaller, since left already points to the smallest possible element, decrement right to decrease sum value
 
 ```
 public int[] twoSum(int[] numbers, int target) {
-	int left = 0, right = numbers.length - 1;
+	int left = 0;
+	int right = numbers.length - 1;
 
-	while (left <= right) {
-		int sum = numbers[left] + numbers[right];
+	while (left < right) {
+		// left points to the leftmost element, left points to a small element
+		int leftVal = numbers[left];
+		// right points to the rightmost element, right points to a larger element
+		int rightVal = numbers[right];
+
+		// calculate the sum as leftValue + rightValue
+		int sum = leftVal + rightVal;
 
 		if (sum == target) {
 			return new int[]{left + 1, right + 1};
-		} else if (sum > target) {
-			right--;
-		} else {
+		}
+
+		// compare target to sum to see how to move left and right so that  sum == target
+		if (target > sum) {
 			left++;
+		}
+
+		if (target < sum) {
+			right--;
 		}
 	}
 
-	return new int[]{-1, -1};
+	return null;
 }
 ```
 
