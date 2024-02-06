@@ -4,9 +4,8 @@
 #### Method 1 - Two pass method
 
 1. make a hashmap and put all index and value pairs in it <K=index,V=val>
-2. loop over all elements in the array and calculate for each one the complement, the difference between target and itself
-then search the hashmap using the complement as the key <=> find the elements so that their sum == target
-
+2. loop over all elements in the array and calculate for the complement each one, the difference between target and itself
+3. then search the hashmap using the complement as the key => find the elements so that their sum == target
 
 ```
 public static int[] twoSum(int[] nums, int target) {
@@ -251,7 +250,7 @@ public static int removeElement(int[] nums, int val) {
 
 
 # 36. Valid Sudoku
-##
+## Diff: Medium | Tags: Array, Hash Table, 
 ### Java
 ####
 use a hashset to store all the seen values in the sudoku board
@@ -394,18 +393,21 @@ For each word in strs: sort the characters, check if hashmap contains the sorted
 ```
 public List<List<String>> groupAnagrams(String[] strs) {
 	HashMap<String, List<String>> anagramMap = new HashMap<>();
+	for (int i = 0; i < strs.length; i++) {
+		char[] strChars = strs[i].toCharArray();
+		Arrays.sort(strChars);
 
-	for (String word : strs) {
-		char[] wordChars = word.toCharArray();
-		Arrays.sort(wordChars);
-		String sortedWord = new String(wordChars);
+		// tried using char[] as key, but the map says it cannot find the key
+		String sortedWord = new String(strChars);
 
+		// if hashmap doesn't have the anagram, then add it with an empty list
 		if (!anagramMap.containsKey(sortedWord)) {
 			anagramMap.put(sortedWord, new ArrayList<>());
 		}
-		anagramMap.get(sortedWord).add(word);
-	}
 
+		// get the list of the anagram and add the word to it
+		anagramMap.get(sortedWord).add(strs[i]);
+	}
 	return new ArrayList<>(anagramMap.values());
 }
 ```
@@ -575,6 +577,29 @@ public int maxDepth(TreeNode root) {
 }
 
 
+# 108. Convert Sorted Array to Binary Search Tree
+## Diff: Easy | Tags: Binary Search Tree, Tree, Binary Tree, Divide and Conquer | Date: 04/02/2023
+### Java
+#### Method 1 - Binary Search
+Nums is a sorted list, so the middle element nums[mid] is the root of the BST
+The next elements of the tree are found by taking the middle elements of the subarrays
+
+public TreeNode sortedArrayToBST(int[] nums) {
+	return toBST(nums, 0, nums.length - 1);
+}
+
+public TreeNode toBST(int nums[], int left, int right) {
+	if (left > right) {
+		return null;
+	}
+
+	int mid = (left + right) / 2;
+	TreeNode root = new TreeNode(nums[mid]);
+	root.left = toBST(nums, left, mid - 1);
+	root.right = toBST(nums, mid + 1, right);
+	return root;
+}
+
 # 110. Balanced Binary Tree
 ##
 ### Java
@@ -597,6 +622,45 @@ public boolean isBalanced(TreeNode root) {
 	} else {
 		return isBalanced(root.left) && isBalanced(root.right);
 	}
+}
+```
+
+# 128. Longest Consecutive Sequence
+## Diff: Medium | Tags: Array, Hash Table, Union Find
+### Java
+#### Method 1 - Use a hashset
+Use a hashset that contains all the values inside the array. Loop over all values in array and search the hashset to find all values in an incrementing sequence and all values in a decrementing sequence from the current value, for each value in sequence increment the max;
+
+```
+public int longestConsecutive(int[] nums) {
+	HashSet<Integer> numSet = new HashSet<>();
+
+	// init HasSet with array values
+	for (int num : nums) {
+		numSet.add(num);
+	}
+
+	int longest = 0;
+	for (int current : nums) {
+		int next = current + 1;
+		int prev = current - 1;
+		int max = 1;
+
+		// loop over values that are smaller than the current one in order
+		while (numSet.contains(prev)) {
+			numSet.remove(prev--);
+			max++;
+		}
+
+		// loop over values that are bigger than the current one in order
+		while (numSet.contains(next)) {
+			numSet.remove(next++);
+			max++;
+		}
+
+		longest = Math.max(longest, max);
+	}
+	return longest;
 }
 ```
 
@@ -767,9 +831,9 @@ public static TreeNode invertBinaryTree(TreeNode root) {
 ```
 
 # 238. Product of Array Except Self
-##
-###
-#### Method 1 -
+## Diff: Medium | Tags: Array, Prefix Sum
+### Java
+#### Method 1 - https://www.youtube.com/watch?v=bNvIQI2wAjk
 For each number calculate a prefix product of all elements before the value, and postfix product of all elements after the value
 The product of all values except self is the previous value in prefix and the next value in postfix
 
@@ -843,9 +907,12 @@ public boolean searchMatrix(int[][] matrix, int target) {
 ##
 ###
 #### Method 1 - Sort the chars
-sort the letters in the string and then compare the sorted arrays
+Anagrams - if the letters of word 1 can be arranged to form word 2 -> then they are anagrams
+Convert the strings int char arrays, sort the arrays and then compare them, if they are different that means that the words cannot be anagrams
+
 ```
-public static boolean isAnagram(String s, String t) {
+public boolean isAnagram(String s, String t) {
+	// if they are different length that => not anagrams
 	if (s.length() != t.length()) {
 		return false;
 	}
@@ -856,7 +923,8 @@ public static boolean isAnagram(String s, String t) {
 	Arrays.sort(sChars);
 	Arrays.sort(tChars);
 
-	return sChars == tChars;
+	return Arrays.equals(sChars, tChars);
+}
 ```
 
 #### Method 2 -
@@ -867,7 +935,7 @@ public static boolean isAnagram(String s, String t) {
 #### Method 1 - Sorting -> the array and check the next element if it equals the current one
 
 ```
-public static boolean containsDuplicate(int[] nums) {
+public boolean containsDuplicate(int[] nums) {
 	Arrays.sort(nums);
 	for (int i = 0; i < nums.length - 1; i++) {
 		if (nums[i] == nums[i + 1]) {
@@ -902,16 +970,19 @@ public static boolean containsDuplicate(int[] nums) {
 ##
 ### Java
 #### Method 1 - Use a maxheap
+Use a hashmap with <Key=NumValue,Value=Frequency> to find the frequency of the elements in the array. Then use a maxheap to get the max element, the element with the hightest frequency from the map
+
 ```
-public static int[] topKFrequent(int[] nums, int k) {
-	Map<Integer, Integer> map = new HashMap<>();
-	for (int val : nums) {
-		map.put(val, map.getOrDefault(val, 0) + 1);
+public int[] topKFrequent(int[] nums, int k) {
+	HashMap<Integer, Integer> frequencyMap = new HashMap<>();
+	for (int elem : nums) {
+		// increment value in map if key is present, otherwise use 0 as default value to increment
+		frequencyMap.put(elem, frequencyMap.getOrDefault(elem, 0) + 1);
 	}
 
 	// define the priority of the queue, max value
-	PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> map.get(b) - map.get(a));
-	maxHeap.addAll(map.keySet());
+	PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> frequencyMap.get(b) - frequencyMap.get(a));
+	maxHeap.addAll(frequencyMap.keySet());
 
 	int[] res = new int[k];
 	for (int i = 0; i < k; i++) {
