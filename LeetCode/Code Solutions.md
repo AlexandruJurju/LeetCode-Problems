@@ -206,6 +206,7 @@ at the end check if stack still has elements in it, if there are values without 
 
 ```
 public static boolean isValid(String s) {
+	// if length is not even then there will always be an extra element without a matching parentheses
 	if (s.length() % 2 == 1) {
 		return false;
 	}
@@ -322,6 +323,50 @@ public static int removeElement(int[] nums, int val) {
 ```
 
 
+
+
+# 33. Search in Rotated Sorted Array
+## Diff: Medium | Tags: Binary Search, Array
+### Java
+#### Method 1
+https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/3879263/100-binary-search-easy-video-o-log-n-optimal-solution
+
+At any point during the search in the rotated array, one half (either the left or the right) will always be sorted
+
+```
+public int search(int[] nums, int target) {
+	int left = 0;
+	int right = nums.length - 1;
+
+	while (left <= right) {
+		int middle = (left + right) / 2;
+		int middleElement = nums[middle];
+
+		if (target == middleElement) {
+			return middleElement;
+		}
+
+		// if the left part is sorted
+		if (nums[left] <= nums[middle]) {
+			if (nums[left] <= target && target < nums[middle]) {
+				right = middle - 1;
+			} else {
+				left = middle + 1;
+			}
+		}
+		// if the right part is sorted
+		else {
+			if (nums[middle] < target && target <= nums[right]) {
+				left = middle + 1;
+			} else {
+				right = middle - 1;
+			}
+		}
+	}
+
+	return -1;
+}
+```
 
 # 36. Valid Sudoku
 ## Diff: Medium | Tags: Array, Hash Table, 
@@ -526,6 +571,44 @@ public static ListNode rotateRight(ListNode head, int k) {
 	return newHead;
 }
 
+# 74.
+## Diff: Medium | Binary Search, Matrix
+### Java
+#### Method 1 -
+The main tip is that the rows of the matrix can be seen as a sorted vector. For each row check if target is between those values, if yes then loop over all columns in that row to find the target. If not, then jump to the next row in the matrix
+
+```
+public boolean searchMatrix(int[][] matrix, int target) {
+	int colIndex = 0;
+	int rowIndex = 0;
+	int rowLength = matrix.length;
+	int colLength = matrix[0].length;
+
+	// if target is smaller than the smallest values and bigger than the greatest then it's not in the matrix
+	if (target < matrix[0][0] || target > matrix[rowLength - 1][colLength - 1]) {
+		return false;
+	}
+
+	while (rowIndex < matrix.length) {
+		// check if target could be in sorted vector
+		if (target >= matrix[rowIndex][0] && target <= matrix[rowIndex][colLength - 1]) {\
+			// if yes, then loop over all columns of that row
+			while (colIndex < colLength) {
+				if (target == matrix[rowIndex][colIndex]) {
+					return true;
+				}
+				colIndex++;
+			}
+			// if all columns are checked and the target wasn't found then it cannot be found anywhere else
+			return false;
+		} else {
+			rowIndex++;
+		}
+	}
+	return false;
+}
+```
+
 # 78. Subsets
 ## 
 ### Java
@@ -699,6 +782,37 @@ public boolean isBalanced(TreeNode root) {
 }
 ```
 
+# 121. Best Time to Buy and Sell Stock
+## Diff: Medium | Tags:
+### Java
+#### Method 1 -
+Loop over all prices in the array. 
+- if you find a price that is lower than the one used to buy stock, then update buyIndex to that price index
+- if you find a price that is bigger than the ones used to buy stock, then check if the local profit is bigger than the global profit
+
+```
+public int maxProfit(int[] prices) {
+	int buyIndex = 0;
+	int sellIndex = 1;
+	int profit = 0;
+
+	// loop over all prices in the array
+	while (sellIndex < prices.length) {
+		// if you find a sell price that is bigger than the buy price check max profit
+		if (prices[sellIndex] > prices[buyIndex]) {
+			profit = Math.max(profit, prices[sellIndex] - prices[buyIndex]);
+		}
+
+		// if you find a price that is lower than the price for buying a stock then update buyIndex = sellIndex
+		if (prices[sellIndex] < prices[buyIndex]) {
+			buyIndex = sellIndex;
+		}
+		sellIndex++;
+	}
+	return profit;
+}
+```
+
 # 125.
 ## Diff: Easy
 ### Java
@@ -791,7 +905,8 @@ public int longestConsecutive(int[] nums) {
 # 150. Evaluate Reverse Polish Notation
 ##
 ### Java
-#### Method 1 - If it's a number add it to the stack, if it's an operator pop 2 values, apply operator, push result to the stack
+#### Method 1 - Stack
+If it's a number add it to the stack, if it's an operator pop 2 values, apply operator, push result to the stack
 ```
 public static int evalRPN(String[] tokens) {
 	Stack<Integer> stack = new Stack<>();
@@ -829,6 +944,9 @@ public static int evalRPN(String[] tokens) {
 # 153. Find Minimum in Rotated Sorted Array
 ## Diff: Med | Tags: Binary Search | Date: ?
 ### Java
+#### Method 1
+You can compare the middle element with the first and last elements to find where the sorted array start IE where the minimum element is. If middle element > nums[right] that means that the sorted array must start in the right part and continue in the left part. If element < nums[left] it means that the array starts in the left part.
+
 ```
 public int findMin(int[] nums) {
     int left = 0;
@@ -845,6 +963,7 @@ public int findMin(int[] nums) {
         if (middleElement > nums[right]) {
             left = middle + 1;
         } else {
+			// right = middle - 1 is not right because in the next search the middle element is skipped, problem just for this func - right = middle - 1 works for normal binary search
             right = middle;
         }
 
@@ -1256,9 +1375,9 @@ public TreeNode searchBST(TreeNode root, int val) {
 }
 
 # 704. Binary Search 
-##
-###
-####
+## Diff: Easy | Tags: Binary Search, Array
+### Java
+#### Method 1 - 
 ```
 public int search(int[] nums, int target) {
 	int length = nums.length;
@@ -1272,6 +1391,7 @@ public int search(int[] nums, int target) {
 	int right = length - 1;
 	int left = 0;
 
+	// equals, so that [5] find the 5
 	while (left <= right) {
 		int middle = (left + right) / 2;
 		int element = nums[middle];
@@ -1292,6 +1412,27 @@ public int search(int[] nums, int target) {
 	return -1;
 }
 ```
+
+# 739. Daily Temperatures
+## Diff: Medium | Tags: Monotonic Stack, Stack
+### Java
+#### Method 1 - Monotonic stack
+Use a monotonic stack to store the indexes of temeperatures. When a temperature that is higher than the current top is found then pop the elements from the stack and add the indexes to the result
+```
+public int[] dailyTemperatures(int[] temperatures) {
+	Stack<Integer> monotonicStack = new Stack<>();
+	int[] result = new int[temperatures.length];
+
+	for (int i = 0; i < temperatures.length; i++) {
+		while (!monotonicStack.isEmpty() && temperatures[monotonicStack.peek()] < temperatures[i]) {
+			result[monotonicStack.peek()] = i - monotonicStack.pop();
+		}
+		monotonicStack.push(i);
+	}
+	return result;
+}
+```
+
 
 # Isogram
 public static boolean isIsogram(String input) {
