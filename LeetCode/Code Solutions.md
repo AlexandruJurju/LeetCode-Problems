@@ -50,14 +50,15 @@ public static int[] twoSum(int[] nums, int target) {
 
 
 # 2. Add two numbers
-##
+## Diff: Medium | Tags: Linked List
 ### Java
-at the start make a resultNode and a dummyNode
-while l1 is not empty, l2 not empty and carry is not empty do
-if l1 is not null then add the value to current sum and go to next node
-if l2 is not null then add the value to current sum and go to next node
+#### Method 1 -
+at the start make a new ListNode called result and use a dummyNode
+while l1 is not empty and l2 not empty and carry is not empty do
+if l1 is not null increment sum with the value and go to next node
+if l2 is not null increment sum with the value and go to next node
 add carry to the current sum, sum = l1.val + l2.val + carry
-the value of the node will be sum % 10 to get the smaller val
+the value of the node will be sum % 10 to get the value in range 0,9
 the value of carry will be sum / 10
 make a new node with the value = sum%10 and
 
@@ -87,7 +88,6 @@ public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 		ListNode node = new ListNode(val);
 		result.next = node;
 		result = result.next;
-
 	}
 
 	return dummyHead.next;
@@ -98,8 +98,7 @@ public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 ##
 ### Java
 #### Method 1 - use 2 pointers to move in the array and a hashset to store the seen characters
-When you see a character that isn't in the hashset add it and increase right index, recalculate max with current hashset size
-When you see a character that is in the hashset, remove it, increase left pointer
+When you see a character that isn't in the hashset add it and increase right index, recalculate max with current hashset size. When you see a character that is in the hashset, remove it, increase left pointer
 
 ```
 public static int lengthOfLongestSubstring(String s) {
@@ -120,6 +119,25 @@ public static int lengthOfLongestSubstring(String s) {
 	}
 	return max;
 }
+```
+
+##### METHOD 2 _ NOT DONE:
+```
+    public int lengthOfLongestSubstring(String s) {
+        HashSet<Character> window = new HashSet<>();
+        int index = 0;
+        int max = 0;
+
+        while (index < s.length()) {
+            if (window.contains(s.charAt(index))) {
+                window.remove(s.charAt(index - window.size()));
+            }
+            window.add(s.charAt(index));
+            max = Math.max(max, window.size());
+            index++;
+        }
+        return max;
+    }
 ```
 
 # 11. Container With Most Water
@@ -236,6 +254,60 @@ public static boolean isValid(String s) {
 }
 ```
 
+# 21. Merge Two Sorted Lists
+## Diff: Easy | Tags: Linked List
+### Java
+#### Method 1 -
+Make a dummy list. Loop over each element of the list until one reaches null. For each element compare them and add the minimum to dummy. At the end check the list  that still has elements and add it to dummy
+
+```
+public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+	// if list1 is null then the merged list is just list 2
+	if (list1 == null) {
+		return list2;
+	}
+
+	// same as above
+	if (list2 == null) {
+		return list1;
+	}
+
+	// make a new list and init a dummy node
+	ListNode newHead = new ListNode();
+	ListNode dummy = newHead;
+
+	// loop over all elements in the list1 and list2 until the end is reached for one of them
+	while (list1 != null && list2 != null) {
+
+		// get the values of the nodes
+		int val1 = list1.val;
+		int val2 = list2.val;
+
+		// put the next value of dummy the node with the lowest values
+		if (val1 <= val2) {
+			dummy.next = list1;
+			list1 = list1.next;
+		} else {
+			dummy.next = list2;
+			list2 = list2.next;
+		}
+		// move dummy to next element to prepare for the next list node
+		dummy = dummy.next;
+	}
+
+	// check to see which node still has elements, and update the ending of the dummy with the non-empty list
+	if (list1 != null) {
+		dummy.next = list1;
+	}
+	if (list2 != null) {
+		dummy.next = list2;
+	}
+
+	return newHead.next;
+}
+```
+
+
 # 22. Generate Parentheses 
 ## Diff: Medium | Tags: Backtracking | Date: ?
 ### Java
@@ -287,13 +359,16 @@ private void backtrack(List<String> results, String current, int open, int close
 ##
 ### Java
 https://leetcode.com/problems/remove-duplicates-from-sorted-array/solutions/3676877/best-method-100-c-java-python-beginner-friendly/
-The Intuition is to use two pointers, i and j, to iterate through the array. The variable j is used to keep track of the current index where a unique element should be placed. The initial value of j is 1 since the first element in the array is always unique and doesn't need to be changed
+The Intuition is to use two pointers, i and j, to iterate through the array. The variable j is used to keep track of the current index where a unique element should be placed. The initial value of j is 1 since the first element in the array is always unique and doesn't need to be changed.
+
 
 ```
 public int removeDuplicates(int[] nums) {
 	int j = 1;
 	for (int i = 1; i < nums.length; i++) {
+		// if you find a unique element
 		if (nums[i] != nums[i - 1]) {
+			// update nums[j] with the value of the unique element at nums[i] and increment j to mark the next position for a new unique element
 			nums[j] = nums[i];
 			j++;
 		}
@@ -902,6 +977,46 @@ public int longestConsecutive(int[] nums) {
 }
 ```
 
+# 141. Linked List Cycle
+## Diff: Easy | Tags: Linked List, Hash Table, Two Pointers
+### Java
+#### Method 1 - HashSet
+Loop over all nodes in the list and use a HashSet to remember the nodes that were seen before
+```
+public boolean hasCycle(ListNode head) {
+	HashSet<ListNode> seen = new HashSet<>();
+	while (head != null) {
+		if (seen.contains(head)) {
+			return true;
+		} else {
+			seen.add(head);
+		}
+		head = head.next;
+	}
+	return false;
+}
+```
+
+#### Method 2 - Two-Pointer Method / Floyd's Cycle-Finding Algorithm / Rabbit and Hare
+https://leetcode.com/problems/linked-list-cycle/solutions/3999014/99-68-two-pointer-hash-table/
+
+Also known as the "hare and tortoise" algorithm, this method uses two pointers that traverse the list at different speeds. The slow pointer moves one step at a time, while the fast pointer moves two steps. If there is a cycle, the fast pointer will eventually catch up to the slow pointer.
+
+```
+public boolean hasCycle(ListNode head) {
+	ListNode slow_pointer = head;
+	ListNode fast_pointer = head;
+	while (fast_pointer != null && fast_pointer.next != null) {
+		slow_pointer = slow_pointer.next;
+		fast_pointer = fast_pointer.next.next;
+		if (slow_pointer == fast_pointer) {
+			return true;
+		}
+	}
+	return false;
+}
+```
+
 # 150. Evaluate Reverse Polish Notation
 ##
 ### Java
@@ -1044,22 +1159,58 @@ public static void DFSSink(char[][] grid, int i, int j) {
 ```
 
 # 206. Reverse Linked List
-##
-###
-####
+## Diff: Easy | Tags: Linked List
+### Java
+#### Method 1
+Simple way to solve this, loop over all nodes and just reverse the pointers to the previous element
+
 ```
 public ListNode reverseList(ListNode head) {
-	ListNode current = head;
-	ListNode previous = null;
+	// 2 nodes, currentNode of the first list and previousNode of the inverted list
+	ListNode currentNode = head;
+	ListNode previousNode = null;
 
-	while (current != null) {
-		ListNode next = current.next;
-		current.next = previous;
-		previous = current;
-		current = next;
+	// loop until the last node of the initial list
+	while (currentNode != null) {
+		// save the next node in the initial list
+		ListNode next = currentNode.next;
+		// the current node points to the previous element
+		currentNode.next = previousNode;
+		// update the previous node as the current node
+		previousNode = currentNode;
+		// move to the next node in the list
+		currentNode = next;
 	}
 
-	return previous;
+	return previousNode;
+}
+```
+
+# 219. Contains Duplicate II
+## Diff: Easy | Tags: Array, Hash Table, Sliding Window
+### Java
+#### Method 1 - Window is HashSet
+
+The problem is trying to find if there are duplicates inside a window of elements with size k.
+Loop over all elements and put them in a hashset. If the size of the hashset is k then remove the oldest element from the hashset. If there are 2 elements with the same value in window -> duplicate
+
+```
+public boolean containsNearbyDuplicate(int[] nums, int k) {
+	HashSet<Integer> window = new HashSet<>();
+	for (int i = 0; i < nums.length; i++) {
+		// if there is a duplicate in the window
+		if (window.contains(nums[i])) {
+			return true;
+		}
+
+		window.add(nums[i]);
+
+		// remove last element in window when size is k to simulate the sliding motion
+		if (window.size() > k) {
+			window.remove(nums[i - k]);
+		}
+	}
+	return false;
 }
 ```
 
