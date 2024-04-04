@@ -50,7 +50,7 @@ public static int[] twoSum(int[] nums, int target) {
 
 
 # 2. Add two numbers
-## Diff: Medium | Tags: Linked List
+## Diff: Medium | Topics: Linked List
 ### Java
 #### Method 1 -
 at the start make a new ListNode called result and use a dummyNode
@@ -141,7 +141,7 @@ public static int lengthOfLongestSubstring(String s) {
 ```
 
 # 11. Container With Most Water
-## Diff: Medium | Tags: Two Pointers, Greedy
+## Diff: Medium | Topics: Two Pointers, Greedy
 ### Java
 #### Method 1 - Use 2 pointers to find area of rectangle
 Using a left and right pointer find the area of the rectangle formed by the heights
@@ -163,7 +163,7 @@ public int maxArea(int[] height) {
 		if (height[left] < height[right]) {
 			left++;
 		} else {
-			right--;
+			right--;	
 		}
 	}
 	return maxArea;
@@ -171,7 +171,7 @@ public int maxArea(int[] height) {
 ```
 
 # 15. 3Sum
-## Dif: Medium | Tags: Two Pointers, Binary Search
+## Dif: Medium | Topics: Two Pointers, Binary Search
 ### Java
 #### Method 1 - Two Pointers
 Similar to #167 TwoSum when array is sorted, but the third value doesnt change,
@@ -211,6 +211,41 @@ public List<List<Integer>> threeSum(int[] nums) {
 ```
 
 #### Method 2 - Two Pointers Enchanced https://www.nileshblog.tech/leet-code-three-3-sum-java-cpp-python-solution/#Java_Two_Pointer_Approach
+
+
+# 19. Remove Nth Node From End of List
+## Diff: Medium | Topics: Linked List, Two Pointers, Fast and Slow pointers
+### Java
+#### Method 1 - Fast and Slow pointers https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/
+- Move one pointer fast --> n+1 places forward, to maintain a gap of n between the two pointers and then move both at the same speed. 
+- Finally, when the fast pointer reaches the end, the slow pointer will be n+1 places behind - just the right spot for it to be able to reached the node to be removed.
+- Removal just make the pointer of the prev node point to the one after the target
+
+```
+public ListNode removeNthFromEnd(ListNode head, int n) {
+	ListNode dummyHead = new ListNode();
+	ListNode slow = dummyHead;
+	ListNode fast = dummyHead;
+	dummyHead.next = head;
+
+	// init the gap between slow and fast pointers
+	for (int i = 0; i <= n; i++) {
+		fast = fast.next;
+	}
+
+	// advance both pointers, keep the gap, until fast reaches end
+	while (fast != null) {
+		slow = slow.next;
+		fast = fast.next;
+	}
+
+	// now slow is the previous node before target
+	// change previous node pointer to the one after target
+	slow.next = slow.next.next;
+	return dummyHead.next;
+}
+```
+         
 
 # 20. Valid Parenthesis
 ##
@@ -255,14 +290,17 @@ public static boolean isValid(String s) {
 ```
 
 # 21. Merge Two Sorted Lists
-## Diff: Easy | Tags: Linked List
+## Diff: Easy | Topics: Linked List
 ### Java
-#### Method 1 -
-Make a dummy list. Loop over each element of the list until one reaches null. For each element compare them and add the minimum to dummy. At the end check the list  that still has elements and add it to dummy
+#### Method 1 - Iterate both lists, add min element to new list
+- Make a dummy list where the elements are added.
+- Loop over each element of the lists until one reaches null.
+- For each element compare them and add the minimum to dummy. 
+- At the end check the list  that still has elements and add it to the dummy list
 
 ```
 public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-	// if list1 is null then the merged list is just list 2
+	// if list1 is null then the merged list is just list 2	
 	if (list1 == null) {
 		return list2;
 	}
@@ -309,7 +347,7 @@ public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
 
 
 # 22. Generate Parentheses 
-## Diff: Medium | Tags: Backtracking | Date: ?
+## Diff: Medium | Topics: Backtracking | Date: ?
 ### Java
 #### Method 1 - Use backtracking
 https://leetcode.com/problems/generate-parentheses/solutions/3512769/c-java-python-javascript-using-recursion-with-explanation/
@@ -378,7 +416,7 @@ public int removeDuplicates(int[] nums) {
 ```
 
 # 27. Remove Element
-## Diff: Easy | Tags: Array, Two Pointers | Date: 25/10/2023
+## Diff: Easy | Topics: Array, Two Pointers | Date: 25/10/2023
 ### Java
 #### Method 1 - use an index to keep track of the numbers of val values AND as a pointer to the current element in nums to be replaced
 
@@ -401,7 +439,7 @@ public static int removeElement(int[] nums, int val) {
 
 
 # 33. Search in Rotated Sorted Array
-## Diff: Medium | Tags: Binary Search, Array
+## Diff: Medium | Topics: Binary Search, Array
 ### Java
 #### Method 1
 https://leetcode.com/problems/search-in-rotated-sorted-array/solutions/3879263/100-binary-search-easy-video-o-log-n-optimal-solution
@@ -444,7 +482,7 @@ public int search(int[] nums, int target) {
 ```
 
 # 36. Valid Sudoku
-## Diff: Medium | Tags: Array, Hash Table, 
+## Diff: Medium | Topics: Array, Hash Table, 
 ### Java
 ####
 use a hashset to store all the seen values in the sudoku board
@@ -608,7 +646,7 @@ public List<List<String>> groupAnagrams(String[] strs) {
 
 
 # 61. Rotate List
-## Diff: Medium | Tags: Linked List, Two Pointers | Date: Date: 17/10/2023
+## Diff: Medium | Topics: Linked List, Two Pointers | Date: Date: 17/10/2023
 ### Java
 #### Method 1 - https://www.youtube.com/watch?v=UcGtPs2LE_c
 public static ListNode rotateRight(ListNode head, int k) {
@@ -734,10 +772,12 @@ public static void backtrack(List<List<Integer>> results, List<Integer> current,
 }
 ```
 
-# 94. Binary Tree Inorder Traversal - Inorder S,R,D
-##
+# 94. Binary Tree Inorder Traversal
+## Tags: Tree, DFS, Binary Tree
 ### Java
 #### Method 1. Recursive with another function
+Inorder traversal, look at Left Node -> Root -> Right Node
+```
 public List<Integer> inorderTraversal(TreeNode root) {
 	List<Integer> list = new ArrayList<Integer>();
 	inorder(root, list);
@@ -750,8 +790,10 @@ public void inorder(TreeNode root, List<Integer> nums) {
 	nums.add(root.val);
 	inorder(root.right, nums);
 }
+```
 
 #### Method 2. Iterative method
+```
 public List<Integer> inorderTraversal(TreeNode root) {
 	List<Integer> list = new ArrayList<Integer>();
 	Stack<TreeNode> stack = new Stack<TreeNode>();
@@ -769,13 +811,14 @@ public List<Integer> inorderTraversal(TreeNode root) {
 
 	return list;
 }
+```
 
-# ?. Is Same Tree
-##
+# 100. Is Same Tree
+## Diff: Easy 
+## Tags: Tree, Binary Tree, DFS, BFS
 ### Java
 #### Method 1 - Recursive method
 https://leetcode.com/problems/same-tree/solutions/3746149/recursive-approach-with-easy-steps/
-
 ```
 public boolean isSameTree(TreeNode p, TreeNode q) {
 	if (p != null && q != null) {
@@ -784,7 +827,9 @@ public boolean isSameTree(TreeNode p, TreeNode q) {
 		return p == q;
 	}
 }
+```
 
+```
 public boolean isSameTree(TreeNode p, TreeNode q) {
 	if (p == null && q == null) // Same Tree
 		return true;
@@ -798,8 +843,10 @@ public boolean isSameTree(TreeNode p, TreeNode q) {
 ```
 
 # 104. Maximum Depth of Binary Tree
-##
+## Diff: Easy
+## Tags: 
 ### Java
+#### Method 1
 public int maxDepth(TreeNode root) {
 	if (root == null) {
 		return 0;
@@ -810,7 +857,7 @@ public int maxDepth(TreeNode root) {
 
 
 # 108. Convert Sorted Array to Binary Search Tree
-## Diff: Easy | Tags: Binary Search Tree, Tree, Binary Tree, Divide and Conquer | Date: 04/02/2023
+## Diff: Easy | Topics: Binary Search Tree, Tree, Binary Tree, Divide and Conquer | Date: 04/02/2023
 ### Java
 #### Method 1 - Binary Search
 Nums is a sorted list, so the middle element nums[mid] is the root of the BST
@@ -858,7 +905,7 @@ public boolean isBalanced(TreeNode root) {
 ```
 
 # 121. Best Time to Buy and Sell Stock
-## Diff: Medium | Tags:
+## Diff: Medium | Topics:
 ### Java
 #### Method 1 -
 Loop over all prices in the array. 
@@ -939,7 +986,7 @@ public boolean isPalindrome(String s) {
 ```
 
 # 128. Longest Consecutive Sequence
-## Diff: Medium | Tags: Array, Hash Table, Union Find
+## Diff: Medium | Topics: Array, Hash Table, Union Find
 ### Java
 #### Method 1 - Use a hashset
 Use a hashset that contains all the values inside the array. Loop over all values in array and search the hashset to find all values in an incrementing sequence and all values in a decrementing sequence from the current value, for each value in sequence increment the max;
@@ -978,14 +1025,16 @@ public int longestConsecutive(int[] nums) {
 ```
 
 # 141. Linked List Cycle
-## Diff: Easy | Tags: Linked List, Hash Table, Two Pointers
+## Diff: Easy | Topics: Linked List, Hash Table, Two Pointers, Fast and Slow pointers
 ### Java
 #### Method 1 - HashSet
 Loop over all nodes in the list and use a HashSet to remember the nodes that were seen before
 ```
 public boolean hasCycle(ListNode head) {
+	// create the hash set that contains the seen nodes
 	HashSet<ListNode> seen = new HashSet<>();
 	while (head != null) {
+		// if hashset contains has already seen the node then the list has a cycle
 		if (seen.contains(head)) {
 			return true;
 		} else {
@@ -1006,7 +1055,10 @@ Also known as the "hare and tortoise" algorithm, this method uses two pointers t
 public boolean hasCycle(ListNode head) {
 	ListNode slow_pointer = head;
 	ListNode fast_pointer = head;
+	// while end of the list wasnt reached, null cannot be reached if list has a cycle
 	while (fast_pointer != null && fast_pointer.next != null) {
+		// slow_pointer moves one ahead AND fast_pointer moves 2 ahead
+		// eventually if there is a cycle they will meet at some
 		slow_pointer = slow_pointer.next;
 		fast_pointer = fast_pointer.next.next;
 		if (slow_pointer == fast_pointer) {
@@ -1057,7 +1109,7 @@ public static int evalRPN(String[] tokens) {
 ```
 
 # 153. Find Minimum in Rotated Sorted Array
-## Diff: Med | Tags: Binary Search | Date: ?
+## Diff: Med | Topics: Binary Search | Date: ?
 ### Java
 #### Method 1
 You can compare the middle element with the first and last elements to find where the sorted array start IE where the minimum element is. If middle element > nums[right] that means that the sorted array must start in the right part and continue in the left part. If element < nums[left] it means that the array starts in the left part.
@@ -1129,6 +1181,71 @@ public int[] twoSum(int[] numbers, int target) {
 }
 ```
 
+# 189.
+## Diff: Medium | Topics: Linked List, Two Pointers
+### Java
+#### Method 1 - Use 2 pointers
+
+```
+// rotate right
+public void rotate(int[] nums, int k) {
+	// if k is more than the length of the array, then the shifting will return the array to the original values
+	k = k % nums.length;
+
+	// if k == 0 then rotations don't change the array
+	if (k == 0) {
+		return;
+	}
+
+	// input : 1,2,3,4,5, k = 2
+
+	// need 3 reversals
+	// 1. reverse the whole array
+	// 5,4,3,2,1
+	rotateRange(nums, 0, nums.length - 1);
+
+	// 2. reverse the first k elements
+	// 4,5,3,2,1
+	rotateRange(nums, 0, k - 1);
+
+	// 3. reverse the remaining size - k elements
+	// 4,5,1,2,3
+	rotateRange(nums, k, nums.length - 1);
+}
+
+public void rotateRange(int[] nums, int left, int right) {
+	while (left < right) {
+		int temp = nums[left];
+		nums[left] = nums[right];
+		nums[right] = temp;
+		left++;
+		right--;
+	}
+}
+```
+
+```
+// rotate left
+public void rotate(int[] nums, int k) {
+	// if k is more than the length of the array, then the shifting will return the array to the original values
+	k = k % nums.length;
+
+	// if k == 0 then rotations don't change the array
+	if (k == 0) {
+		return;
+	}
+
+	// 1. reverse whole array
+	rotateRange(nums, 0, nums.length - 1);
+
+	// 2. reverse first size - k elements
+	rotateRange(nums, 0, nums.length - 1 - k);
+
+	// 3. reverse remaining k elements
+	rotateRange(nums, nums.length - k, nums.length - 1);
+}
+```
+
 # 200. Number of islands ???
 ```
 public static int numIslands(char[][] grid) {
@@ -1159,7 +1276,7 @@ public static void DFSSink(char[][] grid, int i, int j) {
 ```
 
 # 206. Reverse Linked List
-## Diff: Easy | Tags: Linked List
+## Diff: Easy | Topics: Linked List
 ### Java
 #### Method 1
 Simple way to solve this, loop over all nodes and just reverse the pointers to the previous element
@@ -1174,10 +1291,13 @@ public ListNode reverseList(ListNode head) {
 	while (currentNode != null) {
 		// save the next node in the initial list
 		ListNode next = currentNode.next;
+
 		// the current node points to the previous element
 		currentNode.next = previousNode;
+
 		// update the previous node as the current node
 		previousNode = currentNode;
+
 		// move to the next node in the list
 		currentNode = next;
 	}
@@ -1187,7 +1307,7 @@ public ListNode reverseList(ListNode head) {
 ```
 
 # 219. Contains Duplicate II
-## Diff: Easy | Tags: Array, Hash Table, Sliding Window
+## Diff: Easy | Topics: Array, Hash Table, Sliding Window
 ### Java
 #### Method 1 - Window is HashSet
 
@@ -1238,7 +1358,7 @@ public static TreeNode invertBinaryTree(TreeNode root) {
 ```
 
 # 238. Product of Array Except Self
-## Diff: Medium | Tags: Array, Prefix Sum
+## Diff: Medium | Topics: Array, Prefix Sum
 ### Java
 #### Method 1 - https://www.youtube.com/watch?v=bNvIQI2wAjk
 For each number calculate a prefix product of all elements before the value, and postfix product of all elements after the value
@@ -1336,6 +1456,23 @@ public boolean isAnagram(String s, String t) {
 
 #### Method 2 -
 
+# 268. Missing Number
+## Diff: Easy | Topics: Array, Hash Table, Math, Binary Search, Bit Manipulation, Sorting
+### Java
+#### Method 1 - Difference between expected sum and actual sum | Runtime: 33% Memory: 92%
+For this problem, because a single element is missing and all elements are increasing by 1, you can calculate the missing number by calculating the difference between expected sum of the array [N*(N-1)]/2 and the actual sum in the input array
+
+```
+public int missingNumber(int[] nums) {
+	int n = nums.length;
+	int expectedSum = (n * (n + 1)) / 2;
+	int realSum = Arrays.stream(nums).sum();
+	return expectedSum - realSum;
+}
+```
+
+#### Method 2 - Sorting the array
+
 # 271. Contains Duplicate
 ##
 ### Java
@@ -1400,7 +1537,7 @@ public int[] topKFrequent(int[] nums, int k) {
 ```
 
 # 463. Island Perimeter
-## Diff: Easy | Tags: DFS, BFS | Date: 29/01/2024
+## Diff: Easy | Topics: DFS, BFS | Date: 29/01/2024
 
 Use BFS or DFS to iterate over all 1s inside of an island
 When 1 is encountered increment the counter and replace 1 with another value
@@ -1446,6 +1583,59 @@ public static int calculatePerimeter(int[][] grid, int i, int j) {
 	return count;
 }
 
+# 509. Fibonacci Number
+## Diff: Easy
+## Topics: Math, Dynamic Programming, Recursion, Memoization
+### Java
+#### Method 1 - Recursive
+
+```
+public int fib(int n) {
+	if (n == 0 || n == 1) {
+		return n;
+	}
+
+	return fib(n - 1) + fib(n - 2);
+}
+```
+
+#### Method 2 - Dynamic programming, Bottom Up
+Use an array to store previous results of fib(i), reuse the calculated results
+```
+public int fib(int n) {
+	if(n == 0 || n == 1){
+		return n;
+	}
+
+	int[] fibSequence = new int[n];
+	fibSequence[0] = 1;
+	fibSequence[1] = 1;
+
+	for (int i = 2; i < n; i++) {
+		fibSequence[i] = fibSequence[i - 1] + fibSequence[i - 2];
+	}
+
+	return fibSequence[n - 1];
+}
+```
+
+#### Method 3 - Dynamic programming, Top Down
+Start from the highest index
+```
+int[] fib_cache = new int[31];
+
+public int fib(int N)
+{
+	if(N <= 1)
+		return N;
+	else if(fib_cache[N] != 0)
+		return fib_cache[N];
+	else
+		return fib_cache[N] = fib(N - 1) + fib(N - 2);
+}
+```
+
+
 # 572. Subtree of Another Tree
 ##
 ### Java
@@ -1477,7 +1667,7 @@ public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 ```
 
 # 682. Baseball Game
-## Diff: Easy | Tags: Stack | Date: 25/10/2023
+## Diff: Easy | Topics: Stack | Date: 25/10/2023
 ### Java
 ```
 public static int calPoints(String[] operations) {
@@ -1507,26 +1697,34 @@ public static int calPoints(String[] operations) {
 ```
 
 # 700. Search in a Binary Search Tree
-## ???
+## Diff: Easy
+## Topics: Tree, Binary Search Tree
 ### Java
+```
 public TreeNode searchBST(TreeNode root, int val) {
+	// no answer found
 	if (root == null) {
 		return null;
 	}
 
+	// found value
 	if (root.val == val) {
 		return root;
 	}
 
+	// if target is more than current node value, then search in left subtree
 	if (root.val > val) {
 		return searchBST(root.left, val);
-	} else {
+	}
+	// if target is less than current node value, then search in right subtree
+	else {
 		return searchBST(root.right, val);
 	}
 }
+```
 
 # 704. Binary Search 
-## Diff: Easy | Tags: Binary Search, Array
+## Diff: Easy | Topics: Binary Search, Array
 ### Java
 #### Method 1 - 
 ```
@@ -1565,7 +1763,7 @@ public int search(int[] nums, int target) {
 ```
 
 # 739. Daily Temperatures
-## Diff: Medium | Tags: Monotonic Stack, Stack
+## Diff: Medium | Topics: Monotonic Stack, Stack
 ### Java
 #### Method 1 - Monotonic stack
 Use a monotonic stack to store the indexes of temeperatures. When a temperature that is higher than the current top is found then pop the elements from the stack and add the indexes to the result
@@ -1584,6 +1782,37 @@ public int[] dailyTemperatures(int[] temperatures) {
 }
 ```
 
+# 876. Middle of the Linked List
+## Diff: Easy
+## Topics: Linked List, Two Pointers, Fast and Slow Pointers
+### Java
+#### Method 1
+
+# 2428. Maximum Sum of an Hourglass
+## Diff: Medium | Topics: Array, Matrix, Prefix Sum
+### Java
+#### Method 1 - Brute force sum elements
+Brute force the sum calculations. Take every element and calculate the hourglass sum in the matrix
+
+```
+public int maxSum(int[][] grid) {
+	int max = Integer.MIN_VALUE;
+	// use grid.length - 2 to make sure the last elements that are summed can still form an hourglass
+	for (int i = 0; i < grid.length - 2; i++) {
+		for (int j = 0; j < grid[0].length - 2; j++) {
+			int topRow = grid[i][j] + grid[i][j + 1] + grid[i][j + 2];
+			int middleValue = grid[i + 1][j + 1];
+			int bottomRow = grid[i + 2][j] + grid[i + 2][j + 1] + grid[i + 2][j + 2];
+			int sum = topRow + middleValue + bottomRow;
+			max = Math.max(max, sum);
+		}
+	}
+	return max;
+}
+```
+
+TODO
+#### Method 2 - Prefix Sum 
 
 # Isogram
 public static boolean isIsogram(String input) {
