@@ -1,57 +1,40 @@
 # 1. Two Sum
-## 
-### Java
-#### Method 1 - Two pass method
-
-1. make a hashmap and put all index and value pairs in it <K=index,V=val>
-2. loop over all elements in the array and calculate for the complement each one, the difference between target and itself
-3. then search the hashmap using the complement as the key => find the elements so that their sum == target
+## Difficulty: Easy
+## Topics: Hash table, Hash map
+### Method 1 - Dictionary / HashMap
+- Calculate a complement (current - target) value for each number in the array. Use a dictonary to store the complements and the ideces that have been found
+- In each pass check if complement of the current value can be found in the dict
 
 ```
-public static int[] twoSum(int[] nums, int target) {
-	HashMap<Integer, Integer> diffMap = new HashMap<>();
-	// create the hashmap with <index,value>
-	for (int i = 0; i < nums.length; i++) {
-		diffMap.put(nums[i], i);
-	}
+public int[] TwoSum(int[] nums, int target)
+{
+	var dictionary = new Dictionary<int, int>();
 
-	for (int i = 0; i < nums.length; i++) {
-		int complement = target - nums[i];
-		// check if complement can be found in the hashmap & check if the index found in the hashmap is not the same as the current element
-		if (diffMap.containsKey(complement) && diffMap.get(complement) != i) {
-			return new int[]{i, diffMap.get(complement)};
+	for (int i = 0; i < nums.Length; i++)
+	{
+		// calculate the complement, the difference required to make up the target
+		var complement = target - nums[i];
+
+		// if the value has already been seen then 
+		if (dictionary.TryGetValue(complement, out var index) && index != i)
+		{
+			// return current index and the index of the complement
+			return [i, index];
 		}
+
+		// if the complement hasn't been found in the dict then add the current complement to the dictionary
+		dictionary.TryAdd(nums[i], i);
 	}
 
-	return new int[]{};
-}
-```
-
-#### Method 2 - One Pass Method
-loop over all values in the array and check for each one if complement is in hashMap if it is then return it as a result otherwise insert the current element index and val in the hashmap and continue searching
-
-```
-public static int[] twoSum(int[] nums, int target) {
-	HashMap<Integer, Integer> valMap = new HashMap<>();
-	for (int i = 0; i < nums.length; i++) {
-		int complement = target - nums[i];
-		// check if complement can be found in the hashmap
-		if (valMap.containsKey(complement)) {
-			return new int[]{i, valMap.get(complement)};
-		}
-		// if not then add element to hashmap
-		valMap.put(nums[i], i);
-	}
-
-	return new int[]{};
+	return [0];
 }
 ```
 
 
 
 # 2. Add two numbers
-## Diff: Medium | Topics: Linked List
-### Java
+## Diff: Medium
+## Topics: Linked List
 #### Method 1 -
 at the start make a new ListNode called result and use a dummyNode
 while l1 is not empty and l2 not empty and carry is not empty do
@@ -167,6 +150,50 @@ public int maxArea(int[] height) {
 		}
 	}
 	return maxArea;
+}
+```
+
+# 13. Roman to Integer
+## Difficulty: Easy
+## Topics: Hash table, Math, String
+###
+- The value of some numerals change based on the next highest value
+- To solve this compare the current value to the next one
+  - If the current value is bigger than the next value then current value is added
+  - If the current value is smaller than the next value then current value is subtracted
+
+```
+public int RomanToInt(string s)
+{
+	var sum = 0;
+	var chars = s.ToCharArray();
+
+	for (int i = 0; i < chars.Length - 1; i++)
+	{
+		var currentValue = GetNumeralValue(chars[i]);
+		var nextValue = GetNumeralValue(chars[i + 1]);
+
+		sum += (currentValue < nextValue ? -1 : 1) * currentValue;
+	}
+
+	sum += GetNumeralValue(chars[chars.Length - 1]);
+
+	return sum;
+}
+
+public int GetNumeralValue(char c)
+{
+	switch (c)
+	{
+		case 'I': return 1;
+		case 'V': return 5;
+		case 'X': return 10;
+		case 'L': return 50;
+		case 'C': return 100;
+		case 'D': return 500;
+		case 'M': return 1000;
+		default: return 0;
+	}
 }
 ```
 
@@ -1431,30 +1458,76 @@ public boolean searchMatrix(int[][] matrix, int target) {
 
 
 # 242. Valid Anagram
-##
-###
-#### Method 1 - Sort the chars
-Anagrams - if the letters of word 1 can be arranged to form word 2 -> then they are anagrams
-Convert the strings int char arrays, sort the arrays and then compare them, if they are different that means that the words cannot be anagrams
+### Difficulty: Easy
+### Topics: Hash table, String, Sorting
+#### Method 1
+- Use a dictionary to store the chars and the number of appearences of each char in one string
+- Loop over all chars of the second string:
+  - If the char cannot be found in the dict then they are not anagrams
+  - If the count of the char is different than the first string then they are not anagrams
 
 ```
-public boolean isAnagram(String s, String t) {
-	// if they are different length that => not anagrams
-	if (s.length() != t.length()) {
+public bool IsAnagram(string s, string t)
+{
+	if (s.Length != t.Length)
+	{
 		return false;
 	}
 
-	char[] sChars = s.toCharArray();
-	char[] tChars = t.toCharArray();
+	// initialize the dictionary with the chars and the frequency of each char for the first string
+	var dict = new Dictionary<char, int>();
+	foreach (var c in s)
+	{
+		if (dict.TryGetValue(c, out int count))
+		{
+			dict[c] = count + 1;
+		}
+		else
+		{
+			dict.Add(c, 1);
+		}
+	}
 
-	Arrays.sort(sChars);
-	Arrays.sort(tChars);
+	// iterate over all chars of the second string
+	foreach (var c in t)
+	{
+		// if the char cannot be found in the dict or the count is different than the first string -> not anagrams
+		if (!dict.TryGetValue(c, out int count) || count == 0)
+		{
+			return false;
+		}
 
-	return Arrays.equals(sChars, tChars);
+		dict[c] = count - 1;
+	}
+
+	return true;
 }
 ```
 
-#### Method 2 -
+#### Method 2 - Sort the chars
+- Convert the strings int char arrays, sort the arrays and then compare them, if they are different that means that the words cannot be anagrams
+
+```
+public bool IsAnagram(string s, string t)
+{
+	if (s.Length != t.Length) return false;
+
+	var first = s.ToCharArray();
+	Array.Sort(first);
+
+	var second = t.ToCharArray();
+	Array.Sort(second);
+
+
+	for (int i = 0; i < first.Length; i++)
+	{
+		if(first[i] != second[i]) return false;
+	}
+	
+	return true;
+}
+```
+
 
 # 268. Missing Number
 ## Diff: Easy | Topics: Array, Hash Table, Math, Binary Search, Bit Manipulation, Sorting
