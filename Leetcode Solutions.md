@@ -1,11 +1,10 @@
 # 1. Two Sum
 ## Difficulty: Easy
 ## Topics: Hash table, Hash map
-### Method 1 - Dictionary / HashMap
+#### Method 1 - Dictionary / HashMap
 - Calculate a complement (current - target) value for each number in the array. Use a dictonary to store the complements and the ideces that have been found
 - In each pass check if complement of the current value can be found in the dict
-
-```
+```csharp
 public int[] TwoSum(int[] nums, int target)
 {
 	var dictionary = new Dictionary<int, int>();
@@ -29,7 +28,7 @@ public int[] TwoSum(int[] nums, int target)
 	return [0];
 }
 ```
-
+---
 
 
 # 2. Add two numbers
@@ -162,7 +161,7 @@ public int maxArea(int[] height) {
   - If the current value is bigger than the next value then current value is added
   - If the current value is smaller than the next value then current value is subtracted
 
-```
+```csharp
 public int RomanToInt(string s)
 {
 	var sum = 0;
@@ -272,47 +271,57 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
 	return dummyHead.next;
 }
 ```
-         
 
-# 20. Valid Parenthesis
-##
-###
-####
-use a stack to store all open parentheses found in the string
-loop over all chars in string, if it finds an open parenthesis it pushes it to the stack
-when you find a closing parenthesis, pop the last element from the stack and check if it's a match 
-if stack is empty when trying to pop then there are pairs without a match -> false
-at the end check if stack still has elements in it, if there are values without a pair -> if yes return false
+# 20. Valid Parentheses
+## Difficulty: Easy  
+## Topics: Stack, String  
+### Approach
+**Loop over all characters in the input string:**
+   - If the character is an opening parenthesis (`(`, `[`, `{`), push it onto the stack.
+   - If the character is a closing parenthesis (`)`, `]`, `}`), pop the top element from the stack and check if it matches the corresponding opening parenthesis.
+   - If no element can be popped (stack is empty), the parentheses are not valid → return `false`.
 
-```
-public static boolean isValid(String s) {
-	// if length is not even then there will always be an extra element without a matching parentheses
-	if (s.length() % 2 == 1) {
-		return false;
-	}
+**Edge cases:**
+   - If the input string length is odd, there will always be an unpaired parenthesis → return `false`.
+   - If the stack is not empty after processing all characters, there are unpaired parentheses → return `false`.
+---
 
-	Stack<Character> charStack = new Stack<>();
+### Solution Code
+```csharp
+public bool IsValid(string s)
+{
+    // If the string length is odd, it cannot be valid
+    if (s.Length % 2 == 1) return false;
 
-	char[] chars = s.toCharArray();
-	for (char c : chars) {
-		if (c == '(' || c == '[' || c == '{') {
-			charStack.push(c);
-		} else {
-			if (charStack.isEmpty()) {
-				return false;
-			}
-			char popped = charStack.pop();
+    Stack<char> parenthesesStack = new Stack<char>();
 
-			if ((c == ')' && popped != '(') ||
-					(c == ']' && popped != '[') ||
-					(c == '}' && popped != '{')) {
-				return false;
-			}
-		}
-	}
+    foreach (char c in s)
+    {
+        if (c == '(' || c == '[' || c == '{')
+        {
+            // Push opening parentheses onto the stack
+            parenthesesStack.Push(c);
+        }
+        else
+        {
+            // If the stack is empty, no matching opening parenthesis
+            if (!parenthesesStack.TryPop(out var popped))
+            {
+                return false;
+            }
 
+            // Check if the popped parenthesis matches the current closing one
+            if ((c == ')' && popped != '(') || 
+                (c == ']' && popped != '[') || 
+                (c == '}' && popped != '{'))
+            {
+                return false;
+            }
+        }
+    }
 
-	return charStack.isEmpty();
+    // If the stack is not empty, some parentheses are unpaired
+    return parenthesesStack.Count == 0;
 }
 ```
 
@@ -932,82 +941,105 @@ public boolean isBalanced(TreeNode root) {
 ```
 
 # 121. Best Time to Buy and Sell Stock
-## Diff: Medium | Topics:
-### Java
-#### Method 1 -
-Loop over all prices in the array. 
-- if you find a price that is lower than the one used to buy stock, then update buyIndex to that price index
-- if you find a price that is bigger than the ones used to buy stock, then check if the local profit is bigger than the global profit
+## Difficulty: Easy
+## Topics: Dynamic Programming, Two pointers, Arrays
+#### Method 1 - Two Pointers
+- use two pointers to represent the buy and sell indeces
+- `left` pointer is the buy index and `right` pointer is the sell index 
+- in every iteration check the prices
+  - if `prices[left]` is smaller than `prices[right]` it means that there is a profit by selling -> check if the profit is bigger than the global profit
+  - if `prices[right]` is smaller than `prices[left]` it means that a better buying day has been found, update `left` with the new buy index
+  - at the end increase `right`
+  
+```csharp
+public int MaxProfit(int[] prices)
+{
+	int left = 0;
+	int right = 1;
+	int maxProfit = 0;
 
-```
-public int maxProfit(int[] prices) {
-	int buyIndex = 0;
-	int sellIndex = 1;
-	int profit = 0;
-
-	// loop over all prices in the array
-	while (sellIndex < prices.length) {
-		// if you find a sell price that is bigger than the buy price check max profit
-		if (prices[sellIndex] > prices[buyIndex]) {
-			profit = Math.max(profit, prices[sellIndex] - prices[buyIndex]);
+	while (right < prices.Length)
+	{
+		// if the trade is profitable check if the profit is bigger than the biggest possible profit
+		if (prices[left] < prices[right])
+		{
+			int profit = prices[right] - prices[left];
+			if (profit > maxProfit)
+			{
+				maxProfit = profit;
+			}
+		}
+		// if the trade isn't profitable, right value is bigger than left value, then update left value to be the right value
+		else
+		{
+			left = right;
 		}
 
-		// if you find a price that is lower than the price for buying a stock then update buyIndex = sellIndex
-		if (prices[sellIndex] < prices[buyIndex]) {
-			buyIndex = sellIndex;
-		}
-		sellIndex++;
+		// go to the next value
+		right++;
 	}
-	return profit;
+
+	return maxProfit;
 }
 ```
 
-# 125.
-## Diff: Easy
-### Java
+# 125. Valid Palindrome
+## Difficulty: Easy
+## Topics: Two Pointers, String
 #### Method 1 - Two Pointers
-Use 2 pointers, left and right, to loop over the string and check if the characters are same
+- Use to pointers to store the current chars
+- Left pointer starts at index 0 and Right pointers starts at the last char
+- Each iteration move left pointer to the right and right pointer to the left, then check if the chars are different
+
+```csharp
+public bool IsPalindrome(string s)
+{
+	if (String.IsNullOrEmpty(s)) return true;
+
+	int leftIndex = 0;
+	int rightIndex = s.Length - 1;
+
+	while (leftIndex < rightIndex)
+	{
+		// increment left index until a letter or char is found
+		while (leftIndex < rightIndex && !Char.IsLetterOrDigit(s[leftIndex])) leftIndex++;
+
+		// increment right index until a letter or char is found
+		while (leftIndex < rightIndex && !Char.IsLetterOrDigit(s[rightIndex])) rightIndex--;
+		
+		// if the chars are different then return false
+		if (char.ToLower(s[leftIndex]) != char.ToLower(s[rightIndex])) return false;
+		
+		// move the pointers to their next positions
+		leftIndex++;
+		rightIndex--;
+	}
+
+	return true;
+}
 ```
-public boolean isPalindrome(String s) {
+- The input can be cleaned before processing for simpler logic, but worse performance
 
-	if (s.isEmpty()) {
-		return true;
+```csharp
+public bool IsPalindrome(string s)
+{
+	if (String.IsNullOrEmpty(s)) return true;
+
+	var chars = s.ToLower().Where(char.IsLetterOrDigit).ToArray();
+
+	int leftIndex = 0;
+	int rightIndex = chars.Length - 1;
+
+	while (leftIndex < rightIndex)
+	{
+		// if the chars are different then return false
+		if (char.ToLower(chars[leftIndex]) != char.ToLower(chars[rightIndex])) return false;
+
+		// move the pointers to their next positions
+		leftIndex++;
+		rightIndex--;
 	}
 
-	char[] chars = s.toCharArray();
-	int left = 0;
-	int right = s.length() - 1;
-	while (left < right) {
-		// use 2 pointers
-		char leftChar = chars[left];
-		char rightChar = chars[right];
-
-		// move left pointer to the right until you find a character
-		while (left < s.length() - 1 && !Character.isLetterOrDigit(leftChar)) {
-			left++;
-			leftChar = chars[left];
-		}
-
-		// move right pointer to the left until you find a character
-		while (right > 0 && !Character.isLetterOrDigit(rightChar)) {
-			right--;
-			rightChar = chars[right];
-		}
-	
-		// if left > right that means that there were characters that werent letters inside the string
-		if (left > right) {
-			return true;
-		}
-
-		// if characters are different then not palindrome
-		if (Character.toLowerCase(chars[left]) != Character.toLowerCase(chars[right])) {
-			return false;
-		}
-
-		// same characters -> move pointers for next iteration
-		left++;
-		right--;
-	}
 	return true;
 }
 ```
@@ -1797,36 +1829,37 @@ public TreeNode searchBST(TreeNode root, int val) {
 ```
 
 # 704. Binary Search 
-## Diff: Easy | Topics: Binary Search, Array
-### Java
-#### Method 1 - 
-```
-public int search(int[] nums, int target) {
-	int length = nums.length;
+## Difficulty: Easy
+## Topics: Binary Search, Array
+#### Solution
+- Use 2 indeces, left and right to create the lookup window
+- in each iteration look at the middle of the array and compare the value to the target
+  - if the value is bigger than the target then continue looking in the left side of the array
+  - if the value is smaller than the target then continue looking in the right side of the array
 
-	if (length == 0) {
-		return -1;
-	}
+```csharp
+public int Search(int[] nums, int target)
+{
+	if (nums.Length == 0) return -1;
 
-	// length is total number of elements
-	// right is the rightmost index, and because numbering is from 0, right should be length - 1
-	int right = length - 1;
 	int left = 0;
+	int right = nums.Length - 1;
 
-	// equals, so that [5] find the 5
-	while (left <= right) {
+	while (left <= right)
+	{
 		int middle = (left + right) / 2;
-		int element = nums[middle];
 
-		if (element == target) {
+		if (nums[middle] == target)
+		{
 			return middle;
 		}
 
-		if (target < element) {
+		if (nums[middle] > target)
+		{
 			right = middle - 1;
 		}
-
-		if (target > element) {
+		else
+		{
 			left = middle + 1;
 		}
 	}
