@@ -404,7 +404,7 @@ In the generateParenthesis function, we initialize an empty result vector and ca
 
 Finally, we return the result vector containing all the generated combinations of well-formed parentheses.
 
-```
+``` csharp
 public List<String> generateParenthesis(int n) {
 	List<String> res = new ArrayList<String>();
 	backtrack(res, "", 0, 0, n);

@@ -368,6 +368,61 @@ public bool IsValid(string s) {
 }
 ```
 
+# 22. Generate Parantheses
+## Difficulty: Medium
+## Topics: Backtracking, Dynamic Programming
+
+### Soltution 1 - Backtracking
+
+```
+https://leetcode.com/problems/generate-parentheses/solutions/1131364/clear-and-simple-explanation-with-intuition-100-faster
+Concept: In every backtracking problem , there are two things to keep in mind , which we will explore here as well :
+
+Base Case: Every problem of backtracking has some base case which tells us at which point we have to stop with the recursion process. In our case, when the length of our string has reached the maximum length(n*2), we stop with the recursion for that case and that is our base case.
+
+Conditions: On observing carefully we find that there are two conditions present:
+
+For adding (: If number of opening brackets(open) is less than the the given length(n) i.e.
+if max<n, then we can add (,else not.
+For adding ): If number of close brackets(close) is less than the opening brackets(open), i.e.
+if open<close, we can add ), else not
+```
+
+```csharp
+public class Solution
+{
+    public IList<string> GenerateParenthesis(int n)
+    {
+        var result = new List<string>();
+        Solve(result, "", 0, 0, n);
+        return result;
+    }
+
+    private void Solve(IList<string> result, string current, int open, int close, int max)
+    {
+        // Base case: if the current string length is equal to 2 * max, there are max number of pairs in the string - the string is a result
+        if (current.Length == max * 2)
+        {
+            result.Add(current);
+            return;
+        }
+
+        // If the number of open parentheses is lower than the max number of pairs -> try adding a new opening parenthesis
+        if (open < max)
+        {
+            Solve(result, current + "(", open + 1, close, max);
+        }
+
+        // If the number of open parentheses is bigger than the number of closed parentheses -> try adding a closing parenthesis to make a pair
+        // This condition makes it so the opening parentheses can never be more than closing ones, '(()' cannot add a new '('
+        if (open > close)
+        {
+            Solve(result, current + ")", open, close + 1, max);
+        }
+    }
+}
+```
+
 # 26. Remove Duplicates from Sorted Array
 ## Difficulty: Medium
 ## Topics: Two Pointers
@@ -2076,6 +2131,72 @@ public class Solution
 }
 ```
 
+# 424. Longest Repeating Character Replacement
+## Difficulty: Medium
+## Topics: Sliding Window, Hash table
+
+### Solution 1 - 
+- The solution is the size of the biggest valid window
+- A window is valid if the number of characters that arent the majority can be replaced using k chars, so the condition is `window.Legth - countOfMajorityElement <= k`
+- If a window respects the condition that it can be counted for the max window length
+
+- To solve this use a sliding window, left & right both start at 0
+- In each iteration
+  - Right is incremented
+  - The current window is checked for validity
+    - If the current window is valid then try to update max
+	- If the current window is invalid then left gets incremented until the window becomes valid
+
+``` csharp
+public class Solution
+{
+    public int CharacterReplacement(string s, int k)
+    {
+        int maxValue = 0;
+        
+        int left = 0;
+        int right = 0;
+        var freqMap = new Dictionary<char, int>();
+        // Track the maximum frequency in the current window
+        int maxElementCount = 0; 
+
+        while (right < s.Length)
+        {
+            char current = s[right];
+
+            // If current character doesn't exist in the hashmap init it with 0
+            freqMap.TryAdd(current, 0);
+            
+            // Update the frequency of the current character
+            freqMap[current]++;
+
+            // Update the maximum frequency in the current window
+            maxElementCount = Math.Max(maxElementCount, freqMap[current]);
+
+            // Calculate the length of the current window
+            int windowLength = right - left + 1;
+
+            // If the window is not valid, move the left pointer to the right
+            if (windowLength - maxElementCount > k)
+            {
+                freqMap[s[left]]--;
+                left++;
+            }
+            else
+            {
+                // Update the maximum length of the valid window
+                maxValue = Math.Max(maxValue, windowLength);
+            }
+
+            right++;
+        }
+        
+        return maxValue;
+    }
+}
+```
+
+
 # 451. Sort Characters By Frequency
 ## Difficulty: Medium
 ## Topics: Hash Map, Heap, Bucket Sort
@@ -2123,6 +2244,51 @@ public string FrequencySort(string s)
 	}
 
 	return sb.ToString();
+}
+```
+
+# 496. Next Greater Element I
+## Difficulty: Easy
+## Topics: Monotonic Stack, Hash Table
+
+### Solution
+- Use a monotonic stack to store the nums with no higher element
+- When a higher element is found pop the nums from the stack until the stack becomes monotonic again (until the stack is empty or the current element is <= than the element in the stack)
+- For each popped element put them in a dictionary with the popped value as the key and the num as the value [element, nextHighest]
+- At the end loop over all values in num1 and seach the dictionary, if the element is contained then it has a nextHighest element, otherwise it doesn't
+
+```csharp
+public class Solution
+{
+    public int[] NextGreaterElement(int[] nums1, int[] nums2)
+    {
+        if (nums1.Length == 0) return [];
+
+        var decreasingStack = new Stack<int>();
+        var nextHighestDict = new Dictionary<int, int>();
+
+        foreach (var num in nums2)
+        {
+            // If a bigger element than the one on top of the stack is found then keep popping the elements
+            // and add them to a dictionary with [element, nextHighest]
+            while (decreasingStack.Count > 0 && num > decreasingStack.Peek())
+            {
+                nextHighestDict.Add(decreasingStack.Pop(), num);
+            }
+
+            decreasingStack.Push(num);
+        }
+
+        // Construct the result array by looking for the array values in the dictionary
+        int[] res = new int[nums1.Length];
+        for (int i = 0; i < nums1.Length; i++)
+        {
+            // If dictionary doesn't contain the element then it has no element higher than it
+            res[i] = nextHighestDict.ContainsKey(nums1[i])? nextHighestDict[nums1[i]] : -1;
+        }
+
+        return res;
+    }
 }
 ```
 
@@ -2221,6 +2387,167 @@ public int Search(int[] nums, int target)
 
 
 
+# 739. Daily Temperatures
+## Difficulty: Medium
+## Topics: Monotonoic Stack
+
+### Solution
+- Use a monotonic stack to store the indeces of the temperatures
+- If a higher temperature found then while there are smaller elements on the stack pop them and calculate the index difference
+
+```csharp
+public class Solution
+{
+    public int[] DailyTemperatures(int[] temperatures)
+    {
+        Stack<int> monotonicDecreasing = new();
+        var result = new int[temperatures.Length];
+
+        for (int i = 0; i < temperatures.Length; i++)
+        {
+            while (monotonicDecreasing.Count > 0 && temperatures[i] > temperatures[monotonicDecreasing.Peek()])
+            {
+                int index = monotonicDecreasing.Pop();
+                result[index] = i - index;
+            }
+
+            monotonicDecreasing.Push(i);
+        }
+
+        return result;
+    }
+}
+```
+
+# 853. Car Fleet
+## Difficulty: Medium
+## Topics: Monotonic Stack, Sorting
+
+### Solution 1 - Monotonic Stack
+- By sorting the cars based on their starting positions, we can iterate from the one closest to the destination to the one furthest from it - this allows us to determine which cars will catch up to each other
+- we calculate the time t it takes for each car to reach the destination `t = (target - position[i]) / speed[i]`
+- When a faster car reaches a slower one - the speed of both becomes that of the slower car -> monotonic decreasing stack
+- Return the size of the stack for the number of fleets
+
+```csharp
+public class Solution {
+    public int CarFleet(int target, int[] position, int[] speed)
+    {
+        var stack = new Stack<double>();
+
+		// Sort the cars by their starting position (ascending order)
+        Array.Sort(position, speed);
+
+        for (int i = 0; i < position.Length; i++)
+        {
+			// Calculate the time it takes for the current car to reach the target
+            var current = (double)(target - position[i]) / speed[i];
+
+			// Check if the current car catches up to the car ahead of it
+            // If the current car's time is less than or equal to the time of the car ahead, it means the current car will catch up and form a fleet with the car ahead
+			// Pop the car that is ahead from the stack
+            while (stack.Any() && current >= stack.Peek())
+            {
+                stack.Pop();
+            }
+
+			// Push the current car's time onto the stack
+            stack.Push(current);
+        }
+		
+        return stack.Count();
+    }
+}
+```
+
+# 875. Koko Eating Bananas
+## Difficulty: Medium
+## Topics: Binary search
+
+### Solution 2 - Binary Search
+- The minimum possible eating speed is 1, the maximum possible is the max pile size
+- We can apply a binary search on the eating speed
+  - if mid eating speed is too slow then move left pointer
+  - if mid eating speed is too high then try to move right pointer to the left
+
+```csharp
+public class Solution
+{
+    public int MinEatingSpeed(int[] piles, int h)
+    {
+        // The minimum possible eating speed is 1
+        int left = 1;
+        // The maximum possible eating speed is the maximum pile size
+        int right = piles.Max();
+
+        // Perform binary search to find the minimum eating speed
+        while (left < right)
+        {
+            int mid = left + (right - left) / 2;
+
+            // Calculate the total hours needed for the current eating speed (mid)
+            int totalHours = 0;
+            foreach (int pile in piles)
+            {
+                totalHours += (int)Math.Ceiling((double)pile / mid);
+            }
+
+            // If the total hours is within the limit, try a smaller eating speed
+            if (totalHours <= h)
+            {
+                right = mid;
+            }
+            // Otherwise, increase the eating speed
+            else
+            {
+                left = mid + 1;
+            }
+        }
+
+        // When left == right, we've found the minimum eating speed
+        return left;
+    }
+}
+```
+
+### Solution 1 - Brute force (time excedded)
+```csharp
+public class Solution
+{
+    public int MinEatingSpeed(int[] piles, int h)
+    {
+        int k = 1;
+        while (true)
+        {
+            int timeSum = 0;
+            bool valid = true;
+
+            // Calculate the total time required for the current k
+            for (int i = 0; i < piles.Length; i++)
+            {
+                int pileSize = piles[i];
+                int time = (pileSize + k - 1) / k; // Equivalent to Math.Ceiling(pileSize / k)
+                timeSum += time;
+
+                // Early exit if the current k is invalid
+                if (timeSum > h)
+                {
+                    valid = false;
+                    break;
+                }
+            }
+
+            // If the current k is valid, return it
+            if (valid)
+                return k;
+
+            // Otherwise, increment k and try again
+            k++;
+        }
+    }
+}
+```
+
 # 973. K Closest Points to Origin
 ## Difficulty: Medium
 ## Topics: Heap, Sorting, Quickselect
@@ -2262,6 +2589,72 @@ public int[][] KClosest(int[][] points, int k)
 ```
 
 
+# 1011. Capacity To Ship Packages Within D Days
+## Difficulty: Medium
+## Topics: Binary Search
+
+### Solution
+- Consider the ship transport weight as the binary search value
+- Left value is the biggest weight of the packages (can't move the biggest package otherwise) and right value is the sum of all packages (move all packages in a day)
+- For each capacity search calculate the number of days it would take to move the packages
+  - Store the number of days needed to transport all packages `daysNeeded` and the `currentWeight` of the packages
+  - For each package weight check if it can be transported with the previous packages, 
+    - if yes add it to `currentWeight`
+	- if not then increase `daysNeeded` and reset `currentWeight` because the previous packages have been delivered
+
+
+```csharp
+public class Solution
+{
+    public int ShipWithinDays(int[] weights, int days)
+    {
+        // Left is max weight of the array - minimum possible ship carry weight otherwise the heviest package can't be carried
+        int left = -1;
+        
+        // Right is the sum of all weights - ship can transport all the items at once
+        int right = 0;
+        foreach (int weight in weights)
+        {
+            left = Math.Max(left, weight);
+            right += weight;
+        }
+
+        while (left < right)
+        {
+            int currentCapacity = (left + right) / 2;
+            
+            // If ship can move more items at once store the weights in currWeight
+            int daysNeeded = 1;
+            int currWeight = 0;
+            foreach (int weight in weights)
+            {
+                // If weight of the package is more than the capacity then jump to the next day and transport packages (remove currWeight)
+                if (currWeight + weight > currentCapacity)
+                {
+                    daysNeeded++;
+                    currWeight = 0;
+                }
+
+                // Add package weight to currentWeight
+                currWeight += weight;
+            }
+
+            // If the ship needs more days to transport the packages than the limit then increase the capacity
+            if (daysNeeded > days)
+            {
+                left = currentCapacity + 1;
+            }
+            else
+            {
+                right = currentCapacity;
+            }
+        }
+
+        return left;
+    }
+}
+```
+
 # 1046. Last Stone Weight
 ## Difficulty: Easy
 ## Topics: Heap
@@ -2290,6 +2683,115 @@ public class Solution
         }
 
         return maxHeap.Dequeue();
+    }
+}
+```
+
+# 1475. Final Prices With a Special Discount in a Shop
+## Difficulty: Easy
+## Topics: Two pointers, Monotonic stack
+
+### Solution 1 - Two pointers (faster than monotonic stack)
+- Loop over each element and calculate the discount with the first price lower than it
+- Left is on the current price and right is moved from the next element until the end
+  - If a number is found so prices[right] <= prices[left] then calcualte the discount
+
+```csharp
+public class Solution
+{
+    public int[] FinalPrices(int[] prices)
+    {
+        int[] discountedPrices = new int[prices.Length];
+
+        for (int i = 0; i < prices.Length; i++)
+        {
+            discountedPrices[i] = prices[i];
+            for (int j = i + 1; j < prices.Length; j++)
+            {
+                if (prices[j] <= prices[i])
+                {
+                    discountedPrices[i] -= prices[j];
+                    break;
+                }
+            }
+        }
+
+        return discountedPrices;
+    }
+}
+```
+
+```csharp
+public class Solution
+{
+    public int[] FinalPrices(int[] prices)
+    {
+        int[] discountedPrices = new int[prices.Length];
+        
+        int left = 0;
+        while (left < prices.Length)
+        {
+            discountedPrices[left] = prices[left];
+            
+            int right = left + 1;
+            while (right < prices.Length)
+            {
+                if (prices[right] <= prices[left])
+                {
+                    discountedPrices[left] -= prices[right];
+                    break;
+                }
+                right++;
+            }
+            
+            left++;
+        }
+
+        return discountedPrices;
+    }
+}
+```
+
+### Solution 2 - Increasint monotonic stack
+- Use a monotonic stack to store the prices with no lower price for the discount
+- When a lower price is found then pop the elements from the stack until the top of the stack is empty or it has >= value than the current price
+- Store the popped elements in a dictionary with [index, discountPrice]
+
+```csharp
+public class Solution
+{
+    public int[] FinalPrices(int[] prices)
+    {
+        // Stack to store indices of prices
+        var increasingStack = new Stack<int>(); 
+        
+        // Dictionary to store discounts for each index
+        var discountDict = new Dictionary<int, int>(); 
+
+        for (int i = 0; i < prices.Length; i++)
+        {
+            // While the stack is not empty and the current price is less than or equal to the price at the top of the stack
+            while (increasingStack.Count > 0 && prices[i] <= prices[increasingStack.Peek()])
+            {
+                // Get the index of the previous price
+                int prevIndex = increasingStack.Pop(); 
+                
+                // Store the discount for the previous index
+                discountDict[prevIndex] = prices[i]; 
+            }
+
+            // Push the current index onto the stack
+            increasingStack.Push(i); 
+        }
+
+        int[] discountedPrices = new int[prices.Length];
+        for (int i = 0; i < prices.Length; i++)
+        {
+            // If the current index has a discount, subtract it from the price; otherwise, use the original price
+            discountedPrices[i] = discountDict.ContainsKey(i) ? prices[i] - discountDict[i] : prices[i];
+        }
+
+        return discountedPrices;
     }
 }
 ```
@@ -2337,5 +2839,51 @@ public int MostFrequentEven(int[] nums)
 	}
 	
 	return mostFrequentEven;
+}
+```
+
+
+# 2594. Minimum Time to Repair Cars
+## Difficulty: Medium
+## Topics: Binary Search
+
+### Solution 
+- Apply a binary search on the time that each engineer takes to repair a car
+- Maximum possible value for the binary search is the time that the lowest rank takes to repair every car
+
+```csharp
+public class Solution
+{
+    public long RepairCars(int[] ranks, int cars)
+    {
+        // Min time to repair
+        long  left = 0;
+
+        // Max time to repair all the cars
+        // Given by considering if the lowest rank tries to repair all the cars
+        long  right = 1L * ranks.Min() * cars * cars;
+
+        while (left <= right)
+        {
+            long  mid = (left + right) / 2;
+
+            // time = r * c^2 => cars repaired in a time t are sqrt( time / r)
+            long repairedCars = 0;
+            foreach (var rank in ranks)
+                repairedCars += (long)Math.Sqrt(1.0d * mid / rank);                
+
+            // If the total cars that could be repaired in time frame is less than target
+            // Then there is not enough time to repair the cars - increase time needed to repair
+            if (repairedCars < cars)
+                left = mid + 1;
+
+            // If the total cars that could be repaired in time frame is greater than target
+            // Then there is too much time to repair the cars - try to reduce time taken to repair
+            if (repairedCars >= cars)
+                right = mid - 1;
+        }
+
+        return left;
+    }
 }
 ```
