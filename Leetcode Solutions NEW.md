@@ -509,6 +509,107 @@ public int RemoveElement(int[] nums, int val)
 }
 ```
 
+# 33. Search in Rotated Sorted Array
+## Difficulty: Medium
+## Topics: Binary Search
+
+### Solution 
+- The array is split into 2 parts, both are sorted but in different directions -> look at comments
+
+```csharp
+public class Solution
+{
+    public int Search(int[] nums, int target)
+    {
+        int l = 0, r = nums.Length - 1;
+
+        while (l <= r)
+        {
+            int mid = (l + r) / 2;
+            if (target == nums[mid])
+            {
+                return mid;
+            }
+
+            // If left side is sorted
+            if (nums[l] <= nums[mid])
+            {
+                // If left side is sorted and target is > middle
+                // -> need to search in the right subarray because mid is the biggest element in the left subarray
+                // If left side is sorted and target is less than the minimum element
+                // -> need to search in the right subarray because nums[l] is the smallest element in the left subarray
+                if (target > nums[mid] || target < nums[l])
+                {
+                    l = mid + 1;
+                }
+                // Otherwise search in the left subarray
+                else
+                {
+                    r = mid - 1;
+                }
+            }
+            // If right side is roted
+            else
+            {
+                // If right side is sorted and target is less than mid
+                // -> need to search in left subarray because mid will be the lowest value in the right subarray
+                // If right side is sorted and target is bigger than nums[right]
+                // -> need to search in the left subarray because nums[r] is the biggest element in the right subarray
+                if (target < nums[mid] || target > nums[r])
+                {
+                    r = mid - 1;
+                }
+                else
+                {
+                    l = mid + 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+```
+
+# 35. Serach Insert Rotation
+## Difficulty: Easy
+## Topics: Binary Search
+
+### Solution
+- Return left pointer instead of -1 if not found 
+
+```csharp
+public class Solution
+{
+    public int SearchInsert(int[] nums, int target)
+    {
+        int left = 0;
+        int right = nums.Length - 1;
+
+        int lastIndex = 0;
+        while (left <= right)
+        {
+            int middle = (left + right) / 2;
+
+            if (nums[middle] == target)
+            {
+                return middle;
+            }
+
+            if (nums[middle] > target)
+            {
+                right = middle - 1;
+            }
+            else
+            {
+                left = middle + 1;
+            }
+        }
+        return left;
+    }
+}
+```
+
 # 36. Valid Sudoku
 ## Difficulty: Medium
 ## Topics: Hash table
@@ -1100,6 +1201,42 @@ public class Solution {
 }
 ```
 
+# 153. Find Minimum in Rotated Sorted Array
+## Difficulty: Medium
+## Topics: Binary Search
+
+### Solution 
+- If mid value is bigger than right most element - it means the rotated part in on the right with the smallest elements
+
+```csharp
+public class Solution
+{
+    public int FindMin(int[] nums)
+    {
+        int left = 0;
+        int right = nums.Length - 1;
+
+        while (left <= right)
+        {
+            int mid = (left + right) / 2;
+            int midValue = nums[mid];
+
+            // If mid value is bigger than right most element - it means the rotated part in on the right with the smallest elements
+            if (midValue > nums[nums.Length - 1])
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        return nums[left];
+    }
+}
+```
+
 # 155. Min Stack
 ## Difficulty: Medium
 ## Topics: Stack, Design
@@ -1315,6 +1452,41 @@ public int MajorityElement(int[] nums)
 }
 ```
 
+# 187. Repeated DNA Sequences
+## Difficulty: Medium
+## Topics: Hash Table, Bit manipulation, Sliding Window, Rolling Hash
+
+### Solution 1 - Hashsets
+- Use a substring to find the sequence of nucleotides
+- Use 2 hashsets, one that contains the seen elements and one that contains the elements that appear more than once
+- (Could also use just a dictionary and return all the keys that appear more than once)
+
+```csharp
+public class Solution
+{
+    public IList<string> FindRepeatedDnaSequences(string s)
+    {
+        var seen = new HashSet<string>();
+        var repeated = new HashSet<string>();
+
+        for (int i = 0; i < s.Length - 9; i++)
+        {
+            var key = s.Substring(i, 10);
+            if (!seen.Add(key))
+                repeated.Add(key);
+        }
+
+        var result = new List<string>();
+        foreach (var elem in repeated)
+        {
+            result.Add(elem);
+        }
+
+        return result;
+    }
+}
+```
+
 # 200. Number of Islands
 ## Difficulty: Medium
 ## Topics: DFS, BFS
@@ -1517,6 +1689,41 @@ public bool IsIsomorphic(string s, string t)
 	}
 
 	return true;
+}
+```
+
+# 209. Minimum Size Subarray Sum
+## Difficulty: Medium
+## Topics: Sliding Window (Dynamic)
+
+### Solution
+- Use a sum to store the sum of all the elments in the window
+- While the condition is true !!! use a while to shrink the window to try and find the smallest possible result
+
+```csharp
+public class Solution
+{
+    public int MinSubArrayLen(int target, int[] nums)
+    {
+        int result = Int32.MaxValue;
+
+        int sum = 0;
+
+        int left = 0;
+        for (int right = 0; right < nums.Length; right++)
+        {
+            sum += nums[right];
+
+            while (sum >= target)
+            {
+                result = Math.Min(result, right - left + 1);
+                sum -= nums[left];
+                left++;
+            }
+        }
+
+        return result == Int32.MaxValue ? 0 : result;
+    }
 }
 ```
 
@@ -1755,6 +1962,101 @@ public bool IsAnagram(string s, string t)
 }
 ```
 
+# 268. Missing Number
+## Difficulty: Easy
+## Topics: Hash Table, Binary Search, Sorting, Bit manipulation
+
+### Solution 4 - XOR
+
+
+### Solution 3 - Sequence Sum - Actual sum
+- Use the difference between the theoretical sequence sum and the actual sum of the array to find the missing element
+
+```csharp
+public class Solution
+{
+    public int MissingNumber(int[] nums)
+    {
+        int n = nums.Length;
+
+        int theoreticalSum = (n * (n + 1)) / 2;
+        int realSum = nums.Sum();
+
+        return theoreticalSum - realSum;
+    }
+}
+```
+
+### Solution 2 - Binary Search
+- Something similar to solution 1, sort the array and use binary search
+- If `nums[mid] == mid`, if midvalue is at the correct index it means that all values on the left are correct, continue searching the right side
+- If `nums[mid] != mid`, if the value is not equal to the index then keep searching in the left zone to find the first element that has a wrong position
+
+  - `0 1 2 3 4 5`
+  - `0 1 2 3 5 6` 
+  - `0 2 3 4 5 6`
+
+```csharp
+public class Solution
+{
+    public int MissingNumber(int[] nums)
+    {
+        int left = 0;
+        int right = nums.Length - 1;
+        
+        Array.Sort(nums);
+
+        while (left <= right)
+        {
+            int mid = (left + right) / 2;
+
+            int midValue = nums[mid];
+
+            // If midvalue is at the correct index it means that all values on the left are correct
+            if (midValue == mid)
+            {
+                left = mid + 1;
+            }
+            // If the value is not equal to the index then keep searching in the left zone to find the first element that has a wrong position
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        return left;
+    }
+}
+```
+
+### Solution 1 - Sort array
+- Sort the array so that the number at index i needs to be equal to i
+- The element that breaks this rule is the missing element 
+
+```csharp
+public class Solution
+{
+    public int MissingNumber(int[] nums)
+    {
+        // Sort the numbers so number at index i needs to be equal to i
+        Array.Sort(nums);
+
+        for (int i = 0; i < nums.Length; i++)
+        {
+            // If value at index i is different than i -> missing value
+            // 0 1 2 3 4
+            // 0 1 3 4 5
+            if (nums[i] != i)
+            {
+                return i;
+            }
+        }
+
+        return nums.Length;
+    }
+}
+```
+
 # 271. Encode and Decode Strings
 ## Difficulty: Medium
 ## Topics: Two Pointers, Sliding Window
@@ -1883,6 +2185,28 @@ public class Solution
         }
 
         return true;
+    }
+}
+```
+
+# 344. Reverse String
+## Difficulty: Easy
+## Topics: Two pointers
+
+### Solution - Two pointers, swap left and right chars
+```csharp
+public class Solution {
+    public void ReverseString(char[] s)
+    {
+        int left = 0;
+        int right = s.Length - 1;
+
+        while (left < right)
+        {
+            (s[left], s[right]) = (s[right], s[left]);
+            left++;
+            right--;
+        }
     }
 }
 ```
@@ -2292,6 +2616,251 @@ public class Solution
 }
 ```
 
+# 567. Permutation in String
+## Difficulty: Medium
+## Topics: Sliding Window, Hash table
+
+### Solution 2 - 
+```csharp
+public class Solution {
+    public bool CheckInclusion(string s1, string s2) {
+        int len1 = s1.Length;
+        int len2 = s2.Length;
+
+        // If s1 is longer than s2, no permutation is possible
+        if (len1 > len2) 
+            return false;
+
+        // Arrays to store the count of each character in s1 and the current window of s2
+        int[] count1 = new int[26];
+        int[] count2 = new int[26];
+
+        // Initialize the character counts for s1 and the first window of s2
+        for (int i = 0; i < len1; i++) {
+            count1[s1[i] - 'a']++; // Increment count for s1
+            count2[s2[i] - 'a']++; // Increment count for the first window of s2
+        }
+
+        // Check if the initial window is a valid permutation
+        if (AreArraysEqual(count1, count2))
+            return true;
+
+        // Slide the window over s2
+        for (int i = len1; i < len2; i++) {
+            // Add the new character to the window
+            count2[s2[i] - 'a']++;
+
+            // Remove the leftmost character from the window
+            count2[s2[i - len1] - 'a']--;
+
+            // Check if the current window is a valid permutation
+            if (AreArraysEqual(count1, count2))
+                return true;
+        }
+
+        return false;
+    }
+
+    // Helper method to compare two integer arrays for equality
+    private bool AreArraysEqual(int[] arr1, int[] arr2) {
+        for (int i = 0; i < 26; i++) {
+            if (arr1[i] != arr2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+### Solution 1 - Compare frequency of characters for s1 and window
+- Create a dictionary to store the frequencies of s1
+- Make a window of size `s1.Length`, if the window was smaller - not all characters would fit, if it was bigger then wrong chars would be counted
+- For each window use a dictionary to store the frequencies of the chars inside the window and then compare the keys and the frequencies with that of s1
+- If they don't match then slide the window to the right `left++` and `right++`
+
+```csharp
+public class Solution
+{
+    public bool CheckInclusion(string s1, string s2)
+    {
+        // If s1 is bigger than s2, no permutation can exist
+        if (s1.Length > s2.Length)
+            return false;
+
+        // Initialize a dictionary to store the character counts of s1
+        var charCount = new Dictionary<char, int>();
+        foreach (var c in s1)
+        {
+            charCount.TryAdd(c, 0);
+            charCount[c]++;
+        }
+
+        int left = 0;
+        // Window size is fixed to s1.Length
+        int right = s1.Length; 
+
+        while (right <= s2.Length) // Use <= to include the last window
+        {
+            // Create a temporary dictionary to count characters in the current window
+            var windowCount = new Dictionary<char, int>();
+            for (int i = left; i < right; i++)
+            {
+                char currentChar = s2[i];
+                if (!charCount.ContainsKey(currentChar))
+                    break; // If a character is not in s1, skip this window
+
+                windowCount.TryAdd(currentChar, 0);
+                windowCount[currentChar]++;
+            }
+
+            // Check if the windowCount matches charCount
+            bool isMatch = true;
+            foreach (var kvp in charCount)
+            {
+                if (!windowCount.ContainsKey(kvp.Key) || windowCount[kvp.Key] != kvp.Value)
+                {
+                    isMatch = false;
+                    break;
+                }
+            }
+
+            // If the window matches, return true
+            if (isMatch)
+                return true;
+
+            // Move the window to the right
+            left++;
+            right++;
+        }
+
+        return false;
+    }
+}
+```
+
+# 594. Longest Harmonious Subsequence
+## Difficulty: Easy
+## Topics: Sliding Window, Hash Table, Counting, Sorting
+
+### Solution 1 - Sliding Window
+```csharp
+public class Solution
+{
+    public int FindLHS(int[] nums)
+    {
+        int result = 0;
+
+        // Sort the arrays - order of elements doesn't matter, now left element in window is the min and right is the max
+        Array.Sort(nums);
+
+        int left = 0;
+        for (int right = 0; right < nums.Length; right++)
+        {
+            // If the difference is greater than 1, shrink window from left until difference is <= 1
+            while (left < right && nums[right] - nums[left] > 1)
+            {
+                left++;
+            }
+
+            // If the difference is exactly 1, we have a valid harmonious subsequence
+            if (nums[right] - nums[left] == 1)
+            {
+                result = Math.Max(result, right - left + 1);
+            }
+        }
+        
+        return result;
+    }
+}
+```
+
+# 643. Maximum Average Subarray I
+## Difficulty: Easy
+## Topics: Sliding Window
+
+### Solution - Simple Sliding Window (Fixed)
+```csharp
+public class Solution
+{
+    public double FindMaxAverage(int[] nums, int k)
+    {
+        double max = double.MinValue;
+
+        int currentSum = 0;
+        int left = 0;
+        for (int right = 0; right < nums.Length; right++)
+        {
+            currentSum += nums[right];
+
+            if (right - left + 1 > k)
+            {
+                currentSum -= nums[left];
+                left++;
+            }
+
+            if (right - left + 1 == k)
+            {
+                max = Math.Max(max, (double)currentSum / k);
+            }
+        }
+
+        return max;
+    }
+}
+```
+
+# 682. Baseball Game
+## Difficulty: Easy (Very)
+## Topics: Stack
+
+### Solution
+```csharp
+public class Solution
+{
+    public int CalPoints(string[] operations)
+    {
+        var stack = new Stack<int>();
+
+        foreach (var op in operations)
+        {
+            if (op == "C")
+            {
+                stack.Pop();
+            }
+            else if (op == "D")
+            {
+                stack.Push(stack.Peek() * 2);
+            }
+            else if (op == "+")
+            {
+                var second = stack.Pop();
+                var first = stack.Peek();
+                stack.Push(second);
+                stack.Push(first + second);
+            }
+            else
+            {
+                stack.Push(int.Parse(op));
+            }
+        }
+
+        if (stack.Count == 0)
+        {
+            return 0;
+        }
+
+        int result = 0;
+        while (stack.Count > 0)
+        {
+            result += stack.Pop();
+        }
+
+        return result;
+    }
+}
+```
+
 # 692. Top K Frequent Words
 ## Difficulty: Medium
 ## Topics: Hash map, Heap, Bucket sort, Sorting
@@ -2425,7 +2994,7 @@ public class Solution
 
 ### Solution 1 - Monotonic Stack
 - By sorting the cars based on their starting positions, we can iterate from the one closest to the destination to the one furthest from it - this allows us to determine which cars will catch up to each other
-- we calculate the time t it takes for each car to reach the destination `t = (target - position[i]) / speed[i]`
+- We can calculate the time `t` that it takes for each car to reach the destination `t = (target - position[i]) / speed[i]`
 - When a faster car reaches a slower one - the speed of both becomes that of the slower car -> monotonic decreasing stack
 - Return the size of the stack for the number of fleets
 
@@ -2435,7 +3004,7 @@ public class Solution {
     {
         var stack = new Stack<double>();
 
-		// Sort the cars by their starting position (ascending order)
+		// Sort the cars by their starting position (ascending order) - start processing cars that are farther away, more chances to overtake
         Array.Sort(position, speed);
 
         for (int i = 0; i < position.Length; i++)
@@ -2446,7 +3015,7 @@ public class Solution {
 			// Check if the current car catches up to the car ahead of it
             // If the current car's time is less than or equal to the time of the car ahead, it means the current car will catch up and form a fleet with the car ahead
 			// Pop the car that is ahead from the stack
-            while (stack.Any() && current >= stack.Peek())
+            while (stack.Any() && stack.Peek() < current)
             {
                 stack.Pop();
             }
@@ -2467,8 +3036,8 @@ public class Solution {
 ### Solution 2 - Binary Search
 - The minimum possible eating speed is 1, the maximum possible is the max pile size
 - We can apply a binary search on the eating speed
-  - if mid eating speed is too slow then move left pointer
-  - if mid eating speed is too high then try to move right pointer to the left
+  - if mid eating speed is too slow then increase eating speed by moving left pointer to the right side
+  - if mid eating speed is too high then try decreasing it by moving right pointer to the left side
 
 ```csharp
 public class Solution
@@ -2481,9 +3050,9 @@ public class Solution
         int right = piles.Max();
 
         // Perform binary search to find the minimum eating speed
-        while (left < right)
+        while (left <= right)
         {
-            int mid = left + (right - left) / 2;
+            int mid = (left + right) / 2;
 
             // Calculate the total hours needed for the current eating speed (mid)
             int totalHours = 0;
@@ -2495,7 +3064,7 @@ public class Solution
             // If the total hours is within the limit, try a smaller eating speed
             if (totalHours <= h)
             {
-                right = mid;
+                right = mid - 1;
             }
             // Otherwise, increase the eating speed
             else
@@ -2589,6 +3158,48 @@ public int[][] KClosest(int[][] points, int k)
 ```
 
 
+# 1004. Max Consecutive Ones III
+## Difficulty: Medium
+## Topics: Sliding window (Dynamic)
+
+### Solution 
+- Store the numbers of zeros in the window
+- While the window doesn't respect the condition, zeros <= k, shrink the window from the left
+- Update the max value with the current windowSize because
+
+```csharp
+public class Solution
+{
+    public int LongestOnes(int[] nums, int k)
+    {
+        int max = -1;
+
+        int zeros = 0;
+
+        int left = 0;
+        for (int right = 0; right < nums.Length; right++)
+        {
+            if (nums[right] == 0)
+                zeros++;
+
+            // While the condition is false, the number of zeros in the window is more than k
+            // Move the left pointer to the right to try to remove the zeros
+            while (zeros > k)
+            {
+                if (nums[left] == 0)
+                    zeros--;
+                left++;
+            }
+            
+            // The window will always be valid because the while on top always makes it valid
+            max = Math.Max(max, right - left + 1);
+        }
+
+        return max;
+    }
+}
+```
+
 # 1011. Capacity To Ship Packages Within D Days
 ## Difficulty: Medium
 ## Topics: Binary Search
@@ -2628,7 +3239,7 @@ public class Solution
             int currWeight = 0;
             foreach (int weight in weights)
             {
-                // If weight of the package is more than the capacity then jump to the next day and transport packages (remove currWeight)
+                // If weight of the package is more than the capacity then jump to the next day and transport packages (reset currWeight)
                 if (currWeight + weight > currentCapacity)
                 {
                     daysNeeded++;
@@ -2683,6 +3294,235 @@ public class Solution
         }
 
         return maxHeap.Dequeue();
+    }
+}
+```
+
+# 1248. Count Number of nice Subarrays
+## Difficulty: Medium
+## Topics: Prefix Sum, Sliding Window, Hash Table
+
+### Solution 2 - Prefix sum ???
+```csharp
+public class Solution
+{
+    public int NumberOfSubarrays(int[] nums, int k)
+    {
+        int result = 0;
+
+        // Convert all numbers to 0 or 1
+        for (int i = 0; i < nums.Length; i++)
+            nums[i] %= 2;
+
+        // prefixCount[i] stores the count of prefix subarrays with sum i
+        int[] prefixCount = new int[nums.Length + 1];
+        prefixCount[0] = 1;
+        int sum = 0;
+
+        foreach (int num in nums)
+        {
+            sum += num;
+            
+            // If we have seen a prefix with sum (sum-k) before, it means the subarray between that prefix and current position has sum k
+            // which means it contains exactly k odd numbers
+            if (sum >= k)
+            {
+                result += prefixCount[sum - k];
+            }
+
+            // Increment the count of prefixes with current sum
+            prefixCount[sum]++;
+        }
+
+        return result;
+    }
+}
+```
+
+### Solution 1 - Sliding Window: Count All subarrays of k and subtract all subarrays of size k-1
+```csharp
+public class Solution
+{
+    // Main method that returns count of subarrays with exactly k odd numbers
+    // SubArray(nums, k) - SubArray(nums, k - 1) gives us the count of subarrays with exactly k odd numbers
+    // SubArray(nums, k) counts all subarrays that have at most k odd numbers (0, 1, 2, ..., k odd numbers)
+    // SubArray(nums, k-1) counts all subarrays that have at most (k-1) odd numbers (0, 1, 2, ..., k-1 odd numbers)
+    public int NumberOfSubarrays(int[] nums, int k)
+    {
+        return Subarrays(nums, k) - Subarrays(nums, k - 1);
+    }
+
+    private int Subarrays(int[] nums, int k)
+    {
+        int result = 0;
+
+        int oddNumbers = 0;
+        int left = 0;
+        for (int right = 0; right < nums.Length; right++)
+        {
+            int currentNum = nums[right];
+
+            if (currentNum % 2 == 1)
+                oddNumbers++;
+
+            // Shrink window from left if odd count exceeds k
+            while (oddNumbers > k)
+            {
+                // If element being removed is odd, decrement the count
+                if (nums[left] % 2 == 1)
+                    oddNumbers--;
+
+                left++;
+            }
+
+            // At this point the window contains at most k odd numbers
+            // All subarrays ending at 'end' and starting between 'start' and 'end' are valid
+            // There are (end-start+1) such subarrays
+            result += right - left + 1;
+        }
+
+        return result;
+    }
+}
+```
+
+# 1423. Maximum Points You Can Obtain from Cards
+## Difficulty: Medium
+## Topics: Sliding Window (Circular), Prefix Sum
+
+### Solution 1 - Sliding the window from the first 3 elements circular
+- Use a circular window that starts at the first 3 elements and moves in a circular way from the start of the array to the end
+- Calculate the sum of the first 3 elements 0, 1 ,2
+- Next, in each iteration move both pointers to the left in a circluar way: array of size 6, move 0, 1, 2 -> 0, 1, 5
+  - Remove from the sum the right most element and add the new element: move 0, 1, 2 -> 0, 1, 5, remove `nums[2]` and add `nums[5]`
+
+```csharp
+public class Solution
+{
+    public int MaxScore(int[] cardPoints, int k)
+    {
+        int n = cardPoints.Length;
+
+        // Find the sum of the first window made up of the element 0, 1 ,2
+        int currentSum = 0;
+        for (int i = 0; i < k; i++)
+            currentSum += cardPoints[i];
+
+        int maxScore = currentSum;
+
+        // Now slide the window to the back using in a circular way
+        for (int right = k - 1; right >= 0; right--)
+        {
+            // Remove the right most element from the current Sum
+            currentSum -= cardPoints[right];
+            
+            // Calculate the index of the new leftmost element using in a circular rotation and add the value to the current sum
+            int left = (right - k + n) % n;
+            currentSum += cardPoints[left];
+
+            maxScore = Math.Max(maxScore, currentSum);
+        }
+
+        return maxScore;
+    }
+}
+```
+
+# 1456. Maximum Number of Vowels in a Substring of Given Length
+## Difficulty: Medium
+## Topics: Sliding Window
+
+### Solution 1 - Sliding Window
+- Store the count of vowels
+- In each iteration check if the current char is a vowel, if yes then increment the counter
+- Check if the current window is bigger than `k`, if yes check if the first character in the window is a vowel, if yes then decrement the vowel counts
+- At the end update the max count with the current vowel count
+
+```csharp
+public class Solution
+{
+    public int MaxVowels(string s, int k)
+    {
+        int res = 0;
+
+        int vowels = 0;
+        int left = 0;
+        for (int right = 0; right < s.Length; right++)
+        {
+            if (IsVowel(s[right]))
+            {
+                vowels++;
+            }
+
+            if (right - left + 1 > k)
+            {
+                if (IsVowel(s[left]))
+                {
+                    vowels--;
+                }
+
+                left++;
+            }
+
+            if (right - left + 1 == k)
+            {
+                res = Math.Max(res, vowels);
+            }
+        }
+
+        return res;
+    }
+
+    private bool IsVowel(char c)
+    {
+        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+    }
+}
+```
+
+### Solution X - 
+- Time limit excedded because of the list storing
+
+```csharp
+public class Solution
+{
+    public int MaxVowels(string s, int k)
+    {
+        int res = 0;
+
+        var current = new List<char>();
+        int left = 0;
+        for (int right = 0; right < s.Length; right++)
+        {
+            current.Add(s[right]);
+
+            if (right - left + 1 > k)
+            {
+                current.RemoveAt(0);
+                left++;
+            }
+
+            if (right - left + 1 == k)
+            {
+                int temp = 0;
+                foreach (var c in current)
+                {
+                    if (IsVowel(c))
+                    {
+                        temp++;
+                    }
+                }
+
+                res = Math.Max(res, temp);
+            }
+        }
+
+        return res;
+    }
+
+    private bool IsVowel(char c)
+    {
+        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
     }
 }
 ```
@@ -2796,6 +3636,389 @@ public class Solution
 }
 ```
 
+# 1652. Defuse the Bomb
+## Difficulty: Easy
+## Topics: Sliding Window
+
+### Solution 2 - Sliding window
+
+```csharp
+public class Solution
+{
+    public int[] Decrypt(int[] code, int k)
+    {
+        int n = code.Length;
+        int[] res = new int[n];
+
+        if (k == 0) 
+            return res;
+
+        int left = 0;
+        int curSum = 0;
+        for (int right = 0; right < n + Math.Abs(k); right++)
+        {
+            // Add the new right element to the sum
+            curSum += code[right % n];
+
+            // If window size is too big, because of last right increase, then subtract last element from sum and move left
+            if (right - left + 1 > Math.Abs(k))
+            {
+                curSum -= code[left % n];
+                left = (left + 1) % n;
+            }
+
+            // If window size is equal to k
+            if (right - left + 1 == Math.Abs(k))
+            {
+                // If k > 0 then the result needs to be written to the element previous to left
+                if (k > 0)
+                {
+                    res[(left - 1 + n) % n] = curSum;
+                }
+                else
+                {
+                    res[(right + 1) % n] = curSum;
+                }
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+### Solution 1 - Sum values
+- Use % on the size of the array to loop around when index goes out of bounds
+
+```csharp
+public class Solution
+{
+    public int[] Decrypt(int[] code, int k)
+    {
+        int n = code.Length;
+        int[] res = new int[n];
+
+        // If k == 0 return the array with zeros
+        if (k == 0)
+            return res;
+
+        for (int i = 0; i < n; i++)
+        {
+            // If k is more than 0 we need to replace with the sum of the k next elements
+            if (k > 0)
+            {
+                // Start at position i until i + k
+                for (int j = i + 1; j <= i + k; j++)
+                {
+                    // Use % to loop around the array when j goes out of bounds
+                    // array of size 4: 0 1 2 3, if j is 4 => 0, 5 => 1
+                    res[i] += code[j % n];
+                }
+            }
+            else
+            {
+                // Start at position i - 1 until i - k 
+                for (int j = i - 1; j >= i - Math.Abs(k); j--)
+                {
+                    // Use % to loop around the array
+                    // Because j can be negative add n to it
+                    // Adding n will not make it generate the wrong index, just make it so it's not negative 11 % 5 = 1; 16 % 5 = 1
+                    int index = (j + n) % n;
+                    res[i] += code[index];
+                }
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+# 1768. Merge Strings Alternately
+## Difficulty: Easy (Very)
+## Topics: Two Pointer
+
+### Solution 1 - One pointer for w1, one for w2
+```csharp
+using System.Text;
+
+public class Solution {
+    public string MergeAlternately(string word1, string word2)
+    {
+        var sBuilder = new StringBuilder();
+
+        int w1Index = 0;
+        int w2Index = 0;
+
+        while (w1Index < word1.Length && w2Index < word2.Length)
+        {
+            sBuilder.Append(word1[w1Index]);
+            sBuilder.Append(word2[w2Index]);
+            
+            w1Index++;
+            w2Index++;
+        }
+
+        while (w1Index < word1.Length)
+        {
+            sBuilder.Append(word1[w1Index]);
+            w1Index++;
+        }
+        
+        while (w2Index < word2.Length)
+        {
+            sBuilder.Append(word2[w2Index]);
+            w2Index++;
+        }
+        
+        return sBuilder.ToString();
+    }
+}
+```
+
+# 1876. Substrings of Size Three with Distinct Characters
+## Difficulty: Easy
+## Topics: Sliding Window, Counting, Hash Table
+
+### Solution 2 - Sliding Window
+
+```csharp
+public class Solution
+{
+    public int CountGoodSubstrings(string s)
+    {
+        int result = 0;
+
+        var windowChars = new List<char>();
+        int left = 0;
+        int k = 3;
+
+        for (int right = 0; right < s.Length; right++)
+        {
+            windowChars.Add(s[right]);
+
+            // If window length is more than k remove the last element nad move left
+            if (right - left + 1 > k)
+            {
+                windowChars.RemoveAt(0);
+                left++;
+            }
+
+            // If the window length is equal to the target size check if all chars are unique
+            if (right - left + 1 == k)
+            {
+                if (windowChars.Distinct().Count() == k)
+                {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+### Solution 1 - Brute force
+- 
+
+```csharp
+public class Solution
+{
+    public int CountGoodSubstrings(string s)
+    {
+        int res = 0;
+
+        for (int i = 1; i < s.Length - 1; i++)
+        {
+            if (s[i] != s[i - 1] && s[i] != s[i + 1] && s[i - 1] != s[i + 1])
+                res++;
+        }
+
+        return res;
+    }
+}
+```
+
+
+# 2024. Maximize the Confusion of an Exam
+## Difficulty: Medium
+## Topics: Sliding Window
+
+### Solution - Sliding Window
+- In each iteration count the number of true and false answers in the winow
+- While the condition is not satisfied then decrese window size by moving left to the right
+
+```csharp
+public class Solution
+{
+    public int MaxConsecutiveAnswers(string answerKey, int k)
+    {
+        int result = 0;
+        int n = answerKey.Length;
+
+        int trueCount = 0;
+        int falseCount = 0;
+        int left = 0;
+        for (int right = 0; right < n; right++)
+        {
+            char current = answerKey[right];
+
+            // Add current char to the window
+            if (current == 'T')
+                trueCount++;
+            else
+                falseCount++;
+
+            // Check validity condition
+            // While either trueCount or falseCount is bigger than k then reduce window size by moving left to the right
+            while (trueCount > k && falseCount > k)
+            {
+                if (answerKey[left] == 'T')
+                    trueCount--;
+                else
+                    falseCount--;
+
+                left++;
+            }
+
+            // Result is the window size
+            result = Math.Max(result, right - left + 1);
+        }
+
+        return result;
+    }
+}
+```
+
+# 2089. Find Target Indices After Sorting Array
+## Difficulty: Easy
+## Topics: Binary Search, Sorting
+
+### Solution 2 - Binary Search
+- Use binary search to find a target element
+- Move mid until the first appearance of that element in the array
+- Add indeces from the duplicate array
+
+```csharp
+public class Solution
+{
+    public IList<int> TargetIndices(int[] nums, int target)
+    {
+        var result = new List<int>();
+        
+        Array.Sort(nums);
+
+        int left = 0;
+        int right = nums.Length - 1;
+
+        while (left <= right)
+        {
+            int mid = (left + right) / 2;
+            int midVal = nums[mid];
+
+            // Find the index of the target
+            if (midVal == target)
+            {
+                // Move `mid` to the first occurrence of the target
+                while (mid > 0 && nums[mid - 1] == target)
+                {
+                    mid--;
+                }
+
+                // Add all occurrences of the target starting from the first occurrence
+                while (mid < nums.Length && nums[mid] == target)
+                {
+                    result.Add(mid);
+                    mid++;
+                }
+
+                break;
+            }
+
+            if (midVal >= target)
+            {
+                right = mid - 1;
+            }
+
+            if (midVal < target)
+            {
+                left = mid + 1;
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+### Solution 1 - Queue
+- Put the indeces of target values in a queue, return the queue at the end
+
+```csharp
+public class Solution {
+    public IList<int> TargetIndices(int[] nums, int target) {
+        Array.Sort(nums);
+        
+        var queue = new Queue<int>();
+        for (int i = 0; i < nums.Length; i++)
+        {
+            if (nums[i] == target)
+            {
+                queue.Enqueue(i);
+            }
+        }
+        
+        
+        return queue.ToArray().ToList();
+    }
+}
+```
+
+# 2379. Minimum Recolors to Get K Consecutive Black Blocks
+## Difficulty: Easy
+## Topics: Sliding Window
+
+### Solution - Sliding Window
+- Store the count of black characters
+- In each iteration if new character is B then increment the count
+- If window size is too big then move left pointer to the right and decrement black count if the character that was removed is B
+- If window size is k then calculate the min replace as `windowSize - blackCount`
+
+```csharp
+public class Solution
+{
+    public int MinimumRecolors(string blocks, int k)
+    {
+        int result = Int32.MaxValue;
+
+        int blackCount = 0;
+
+        int left = 0;
+        for (int right = 0; right < blocks.Length; right++)
+        {
+            if (blocks[right] == 'B')
+                blackCount++;
+
+            if (right - left + 1 > k)
+            {
+                if (blocks[left] == 'B')
+                    blackCount--;
+                left++;
+            }
+
+            if (right - left + 1 == k)
+            {
+                int replace = right - left + 1 - blackCount;
+                result = Math.Min(result, replace);
+            }
+        }
+
+        return result;
+    }
+}
+```
+
 # 2404. Most Frequent Even Element
 ## Difficulty: Easy
 ## Topics: Hash table, Sorting, Heap
@@ -2843,6 +4066,140 @@ public int MostFrequentEven(int[] nums)
 ```
 
 
+# 2529. Maximum Count of Positive Integer and Negative Integer
+## Difficulty: Easy / Medium for binary search
+## Topics: Binary Search, Counting
+
+### Solution 2
+- Use binary search to the index of the last negative number and the index of the first positive number
+- Use them to calculate the number of zeros and the count of positive and negative numbers
+
+```csharp
+public class Solution
+{
+    public int MaximumCount(int[] nums)
+    {
+        int lastNegativeIndex = LastNegativeIndex(nums);
+        int firstPositiveIndex = FirstPositiveIndex(nums);
+
+        // Calculate the count of negative numbers
+        int negativeCount = lastNegativeIndex + 1;
+
+        // Calculate the count of positive numbers
+        int positiveCount = nums.Length - firstPositiveIndex;
+
+        // Return the maximum of the two counts
+        return Math.Max(negativeCount, positiveCount);
+    }
+
+    private int FirstPositiveIndex(int[] nums)
+    {
+        int left = 0;
+        int right = nums.Length - 1;
+
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+
+            // If mid value is positive, and it is either the first element of the array or the element before it was negative
+            if (nums[mid] > 0 && (mid == 0 || nums[mid - 1] <= 0))
+            {
+                // Found the first positive number
+                return mid;
+            }
+            else if (nums[mid] > 0)
+            {
+                // Search in the left half
+                right = mid - 1;
+            }
+            else
+            {
+                // Search in the right half
+                left = mid + 1;
+            }
+        }
+
+        // If no positive number is found, return nums.Length
+        return nums.Length;
+    }
+
+    private int LastNegativeIndex(int[] nums)
+    {
+        int left = 0;
+        int right = nums.Length - 1;
+
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+
+            // If the mid value is negative and it's either the last element of the array or the element after it is positive
+            if (nums[mid] < 0 && (mid == nums.Length - 1 || nums[mid + 1] >= 0))
+            {
+                // Found the last negative number
+                return mid;
+            }
+            else if (nums[mid] < 0)
+            {
+                // Search in the right half
+                left = mid + 1;
+            }
+            else
+            {
+                // Search in the left half
+                right = mid - 1;
+            }
+        }
+
+        // If no negative number is found, return -1
+        return -1;
+    }
+}
+```
+
+### Solution 1 - Brute force, look at all elements
+
+# 2540. Minimum Common Value
+## Difficulty: Easy
+## Topics: Binary Search, Two Pointers
+
+### Solution 1 - Two pointers
+- Use 2 pointers one for nums1 and one for nums2
+- If the values at the pointers are equal then the common minimum has been found
+- If num1Value is bigger than nums2Value then nums2 index needs to move to the right so it can find bigger value
+- Same for nums2Value
+
+```csharp
+public class Solution {
+    public int GetCommon(int[] nums1, int[] nums2)
+    {
+        int idx1 = 0;
+        int idx2 = 0;
+        
+        while (idx1 < nums1.Length && idx2 < nums2.Length)
+        {
+            int nums1Val = nums1[idx1];
+            int nums2Val = nums2[idx2];
+
+            if (nums1Val == nums2Val)
+            {
+                return nums1Val;
+            }
+
+            if (nums1Val < nums2Val)
+            {
+                idx1++;
+            }
+            else
+            {
+                idx2++;
+            }
+        }
+
+        return -1;
+    }
+}
+```
+
 # 2594. Minimum Time to Repair Cars
 ## Difficulty: Medium
 ## Topics: Binary Search
@@ -2886,4 +4243,171 @@ public class Solution
         return left;
     }
 }
+```
+
+# 3258. Count Substrings That Satisfy K-Constraint I
+## Difficulty: Easy
+## Topics: Sliding Window
+
+
+### Solution 2 - Sliding Window
+- We maintain a sliding window that tracks the number of 0s and 1s in the current substring. As we iterate through the string, we expand the window by including the current character. If the counts of 0s and 1s both exceed k, we adjust the left boundary of the window until it becomes valid again. For each valid window, we count the number of substrings ending at the current character.
+
+
+```csharp
+public class Solution
+{
+    public int CountKConstraintSubstrings(string s, int k)
+    {
+        int result = 0;
+
+        int zeros = 0;
+        int ones = 0;
+
+        int left = 0;
+        for (int right = 0; right < s.Length; right++)
+        {
+            char current = s[right];
+            if (current == '0')
+                zeros++;
+            else
+                ones++;
+
+            // If both conditions are false need to shrink the window
+            while (!(zeros <= k || ones <= k))
+            {
+                // Remove the first char in the window and update the counts
+                if (s[left] == '0')
+                    zeros--;
+                else
+                    ones--;
+
+                left++;
+            }
+
+            // All substrings ending at r and starting from l to r are valid
+            result += (right - left + 1);
+        }
+
+        return result;
+    }
+}
+```
+
+### Solution 1 - Brute force
+
+```csharp
+public class Solution {    
+    public int CountKConstraintSubstrings(string s, int k) {
+        int result = 0;
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            int zeros = 0;
+            int ones = 0;
+            for (int j = i; j < s.Length; j++)
+            {
+                if (s[j] == '0')
+                {
+                    zeros++;
+                }
+                else
+                {
+                    ones++;
+                }
+                if (zeros <= k || ones <= k)
+                {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+
+
+# Geeks For Geeks
+
+## Maximum sum of subarray - Geeks for geeks
+
+### Solution 2 - Sliding Window (Static Size)
+
+```java
+public static int maximumSumSubarray(int[] arr, int k) {
+    // Check if array has sufficient elements
+    if (arr.length < k)
+        return -1;
+
+    int max = 0;
+
+    int currentSum = 0;
+    int left = 0;
+    for (int right = 0; right < arr.length; right++) {
+        currentSum += arr[right];
+
+        if (right - left + 1 > k) {
+            currentSum -= arr[left];
+            left++;
+        }
+
+        if (right - left + 1 == k) {
+            max = Math.max(max, currentSum);
+        }
+    }
+
+    return max;
+}
+```
+
+### Solution 1 - Inneficient / No sliding window
+
+```java
+public int maximumSumSubarray(int[] arr, int k) {
+    // Check if array has sufficient elements
+    if (arr.length < k) {
+        return -1;
+    }
+
+    int max = Integer.MIN_VALUE;
+
+    for (int right = k - 1; right < arr.length; right++) {
+        int currentSum = 0;
+        for (int left = right - k + 1; left <= right; left++) {
+            currentSum += arr[left];
+        }
+        max = Math.max(max, currentSum);
+    }
+
+    return max;
+}
+```
+
+## Longest Subarray With Sum < S
+
+### Solution - Sliding Window (Dynamic Size)
+```csharp
+    public int LongestSubarrayWithSumLess(int[] nums, int s)
+    {
+        int result = 0;
+
+        int currentSum = 0;
+        int left = 0;
+        for (int right = 0; right < nums.Length; right++)
+        {
+            currentSum += nums[right];
+
+            if (currentSum < s)
+            {
+                currentSum -= nums[left];
+                left++;
+            }
+
+            result = Math.Max(result, currentSum);
+        }
+
+        return result;
+    }
 ```
