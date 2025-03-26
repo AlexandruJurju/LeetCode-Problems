@@ -2,7 +2,8 @@
 ```csharp
 public int Search(int[] nums, int target)
 {
-	if (nums.Length == 0) return -1;
+	if (nums.Length == 0)
+     return -1;
 
 	int left = 0;
 	int right = nums.Length - 1;

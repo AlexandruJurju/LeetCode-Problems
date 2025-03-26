@@ -368,6 +368,46 @@ public bool IsValid(string s) {
 }
 ```
 
+# 21. Merge Two Sorted Lists
+## Difficulty: Easy
+## Topics: Linked List, Recursion
+
+### Solution 1: Iterative
+```csharp
+public class Solution
+{
+    public ListNode MergeTwoLists(ListNode list1, ListNode list2)
+    {
+        ListNode dummy = new ListNode(0);
+        ListNode result = dummy;
+
+        // While both lists are still not null / one list still has values
+        while (list1 != null && list2 != null)
+        {
+            // Place the lower value between the 2 list nodes at the current result node and move to the next element of the list
+
+            if (list1.val <= list2.val)
+            {
+                result.next = list1;
+                list1 = list1.next;
+            }
+            else
+            {
+                result.next = list2;
+                list2 = list2.next;
+            }
+
+            result = result.next;
+        }
+
+        // If list1 is null then add the remainder of list to the result list
+        result.next = list1 ?? list2;
+
+        return dummy.next;
+    }
+}
+```
+
 # 22. Generate Parantheses
 ## Difficulty: Medium
 ## Topics: Backtracking, Dynamic Programming
@@ -843,6 +883,46 @@ public class Solution
 }
 ```
 
+# 83. Remove Duplicates from Sorted List
+## Difficulty: Easy
+## Topics: Linked List
+
+### Solution 
+- Compare current node value with next node value, if they match then skip next node
+
+```csharp
+public class Solution
+{
+    public ListNode DeleteDuplicates(ListNode head)
+    {
+        if (head == null)
+            return null;
+
+        if (head.next == null)
+            return head;
+
+        ListNode dummy = head;
+
+        // Keep checking until current node has a node after it - if the current node doesn't have any other nodes after it then the list can't have duplicates
+        while (head.next != null)
+        {
+            // If next node is a duplicate - jump over the next node
+            if (head.val == head.next.val)
+            {
+                head.next = head.next.next;
+            }
+            // Otherwise continue the list as normal
+            else
+            {
+                head = head.next;
+            }
+        }
+
+        return dummy;
+    }
+}
+```
+
 # 88. Merge Sorted Array
 ## Difficulty: Easy
 ## Topics: Two Pointers, Sorting
@@ -1067,6 +1147,36 @@ public int LongestConsecutive(int[] nums)
 	}
 
 	return maxLength;
+}
+```
+
+# 141. Linked List Cycle
+## Difficulty: Easy
+## Topics: Linked List, Two Pointers (Fast and Slow)
+
+### Solution - Fast and Slow pointers
+- Use 2 pointers one that moves one node at a time and one that moves 2 nodes at a time
+- If the list has a cycle they will meet somewhere
+
+```csharp
+public class Solution
+{
+    public bool HasCycle(ListNode head)
+    {
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null)
+        {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if (slow == fast)
+                return true;
+        }
+
+        return false;
+    }
 }
 ```
 
@@ -1586,6 +1696,40 @@ private void ProcessIslands(char[][] grid, int row, int col)
 }
 ```
 
+# 203. Remove Linked List Elements
+## Difficulty: Easy
+## Topics: Linked List, Recursion
+
+### Solution 
+- Store the previous value, when a node with the target value is found set the previous node next pointer to the next node
+
+```csharp
+public class Solution
+{
+    public ListNode RemoveElements(ListNode head, int val)
+    {
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        
+        ListNode prev = dummy;
+        ListNode curr = head;
+        
+        while(curr != null)
+        {
+            // Make previous skip the current node
+            if(curr.val == val)
+                prev.next = curr.next;
+            // If current value is the same with target don't update previous - there are situations where the first node has the target value and this will case it to break
+            else
+                prev = curr;
+            curr = curr.next;
+        }
+        
+        return dummy.next;
+    }
+}
+```
+
 # 205. Isomorphic String
 ## Difficulty: Easy
 ## Topics: Hash Table
@@ -1798,6 +1942,250 @@ public bool ContainsDuplicate(int[] nums)
 	}
 
 	return false;
+}
+```
+
+# 225. Implment Stack using Queues
+## Difficulty: Easy
+## Topics: Stack, Queue, Design
+
+### Solution 2 - One Queue
+```csharp
+public class MyStack
+{
+    // Use a single queue to simulate the stack
+    private Queue<int> queue;
+
+    public MyStack()
+    {
+        queue = new Queue<int>();
+    }
+
+    // Push element x onto the stack
+    public void Push(int x)
+    {
+        // Add the new element to the queue
+        queue.Enqueue(x);
+
+        // Rotate the queue so that the new element is at the front
+        // This simulates the LIFO (Last-In-First-Out) behavior of a stack
+        int size = queue.Count;
+        for (int i = 0; i < size - 1; i++)
+        {
+            // Move the front element to the back of the queue
+            queue.Enqueue(queue.Dequeue());
+        }
+    }
+
+    // Remove and return the element on the top of the stack
+    public int Pop()
+    {
+        // Since the top element is always at the front of the queue, simply dequeue it
+        return queue.Dequeue();
+    }
+
+    // Return the element on the top of the stack without removing it
+    public int Top()
+    {
+        // Since the top element is always at the front of the queue, simply peek at it
+        return queue.Peek();
+    }
+
+    // Check if the stack is empty
+    public bool Empty()
+    {
+        // The stack is empty if the queue is empty
+        return queue.Count == 0;
+    }
+}
+```
+
+### Solution 1 - Two Queues (Similar to #232)
+
+```csharp
+public class MyStack
+{
+    // queue1 is the main queue used to store stack elements
+    private Queue<int> queue1;
+    
+    // queue2 is a temporary queue used during the Push operation to reorder elements
+    private Queue<int> queue2;
+
+    public MyStack()
+    {
+        // Initialize both queues
+        queue1 = new Queue<int>();
+        queue2 = new Queue<int>();
+    }
+
+    // Push element x onto the stack
+    public void Push(int x)
+    {
+        // Move all elements from queue1 to queue2
+        // This ensures the new element x is added to the front of queue1
+        int q1Size = queue1.Count;
+        for (int i = 0; i < q1Size; i++)
+        {
+            queue2.Enqueue(queue1.Dequeue());
+        }
+
+        // Add the new element x to queue1
+        queue1.Enqueue(x);
+
+        // Move all elements back from queue2 to queue1
+        // This restores the order of elements, with x at the front of queue1
+        while (queue2.Count > 0)
+        {
+            queue1.Enqueue(queue2.Dequeue());
+        }
+    }
+
+    // Remove and return the element on the top of the stack
+    public int Pop()
+    {
+        // Since queue1 maintains the stack order, simply dequeue from queue1
+        return queue1.Dequeue();
+    }
+
+    // Return the element on the top of the stack without removing it
+    public int Top()
+    {
+        // Since queue1 maintains the stack order, simply peek at the front of queue1
+        return queue1.Peek();
+    }
+
+    // Check if the stack is empty
+    public bool Empty()
+    {
+        // The stack is empty if queue1 is empty
+        return queue1.Count == 0;
+    }
+}
+```
+
+# 232. Implementing Queue with Stacks
+## Difficulty: Easy
+## Topics: Stack, Queue, Design
+
+### Solution - Use 2 stacks
+- One stack is used just for pushing elements, one is used to pop and peek the elements
+- To Make the order of the elements the same as a queue, when an element is popped move them all from stack1 to stack2, now oldest elements from stack1 will pe placed at the bottom of stack2 and removed first
+
+```csharp
+namespace LeetCode;
+
+public class MyQueue
+{
+    // stack1 is used for pushing elements into the queue
+    private Stack<int> stack1;
+    
+    // stack2 is used for popping and peeking elements from the queue
+    private Stack<int> stack2;
+
+    public MyQueue()
+    {
+        // Initialize both stacks
+        stack1 = new Stack<int>();
+        stack2 = new Stack<int>();
+    }
+
+    // Push element x to the back of the queue
+    public void Push(int x)
+    {
+        // Always push the new element onto stack1
+        stack1.Push(x);
+    }
+
+    // Remove and return the element from the front of the queue
+    public int Pop()
+    {
+        // If stack2 is empty, transfer all elements from stack1 to stack2
+        // This reverses the order of elements, making the oldest element in stack1 the top of stack2
+        if (stack2.Count == 0)
+        {
+            while (stack1.Count > 0)
+            {
+                stack2.Push(stack1.Pop());
+            }
+        }
+        // Pop and return the top element from stack2
+        return stack2.Pop();
+    }
+
+    // Return the element at the front of the queue without removing it
+    public int Peek()
+    {
+        // If stack2 is empty, transfer all elements from stack1 to stack2
+        if (stack2.Count == 0)
+        {
+            while (stack1.Count > 0)
+            {
+                stack2.Push(stack1.Pop());
+            }
+        }
+        // Return the top element from stack2 without popping it
+        return stack2.Peek();
+    }
+
+    // Check if the queue is empty
+    public bool Empty()
+    {
+        // The queue is empty if both stacks are empty
+        return stack1.Count == 0 && stack2.Count == 0;
+    }
+}
+```
+
+# 234. Palindrome Linked List
+## Difficulty: Easy
+## Topics: Linked List, Two Pointers (Slow and Fast)
+
+### Solution 1 - Slow and fast pointers to find middle, reverse the list
+```csharp
+public class Solution
+{
+    public bool IsPalindrome(ListNode head)
+    {
+        if (head == null || head.next != null)
+            return true;
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        // Use slow and fast pointers to find the middle
+        // When fast pointer reaches the end, slow will be in the middle of the list
+        while (fast != null && fast.next != null)
+        {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+
+        // Reverse the second half of the list
+        ListNode prev = null;
+        ListNode current = slow;
+        while (current != null)
+        {
+            ListNode nextNode = current.next;
+            current.next = prev;
+            prev = current;
+            current = nextNode;
+        }
+
+        // Compare each node in the halves of the list
+        ListNode firstHalf = head;
+        ListNode secondHalf = prev;
+        while (secondHalf != null)
+        {
+            if (firstHalf.val != secondHalf.val)
+                return false;
+
+            firstHalf = firstHalf.next;
+            secondHalf = secondHalf.next;
+        }
+
+        return true;
+    }
 }
 ```
 
@@ -2419,6 +2807,35 @@ public bool CanConstruct(string ransomNote, string magazine)
 ```
 
 ### Solution 2 - Counting array for chars
+
+# 387. First Unique Character in a String
+## Difficulty: Easy
+## Topics: Hash Table, Queue, Counting
+
+### Solution 1 - Count frequencies
+```csharp
+public class Solution
+{
+    public int FirstUniqChar(string s)
+    {
+        int[] freq = new int[26];
+        foreach (var c in s)
+        {
+            freq[c - 'a']++;
+        }
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (freq[s[i] - 'a'] == 1)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+}
+```
 
 # 392. Is Subsequence
 ## Difficulty: Easy
@@ -3113,6 +3530,29 @@ public class Solution
             // Otherwise, increment k and try again
             k++;
         }
+    }
+}
+```
+
+# 876. Middle of the Linked List
+## Difficulty: Easy
+## Topics: Linked List, Two Pointers (Slow and Fast)
+
+### Solution - Slow and Fast Pointers
+```csharp
+public class Solution
+{
+    public ListNode MiddleNode(ListNode head)
+    {
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
     }
 }
 ```
@@ -4066,6 +4506,44 @@ public int MostFrequentEven(int[] nums)
 ```
 
 
+# 2500. Delete Greatest Value in Each Row
+## Difficulty: Easy (Medium)
+## Topics: Sorting
+
+### Solution 1 - Sort the rows, find max for each column and add it to sum
+- In each iteration the maximum value of each row is added to the sum
+- By sorting the rows at the start the maximum values of each array for a iteration will be placed on the same column
+- Find the max of each column and add it to the sum
+
+```csharp
+public class Solution
+{
+    public int DeleteGreatestValue(int[][] grid)
+    {
+        // Sort the rows, now smallest values are at the start, bigger ones are on the right
+        foreach (int[] row in grid)
+        {
+            Array.Sort(row);
+        }
+
+        // Iterate over the matrix in column direction, the max element in each column will be added to the sum
+        int result = 0;
+        for (int i = 0; i < grid[0].Length; i++)
+        {
+            int max = 0;
+            for (int j = 0; j < grid.Length; j++)
+            {
+                max = Math.Max(max, grid[j][i]);
+            }
+
+            result += max;
+        }
+
+        return result;
+    }
+}
+```
+
 # 2529. Maximum Count of Positive Integer and Negative Integer
 ## Difficulty: Easy / Medium for binary search
 ## Topics: Binary Search, Counting
@@ -4200,6 +4678,41 @@ public class Solution {
 }
 ```
 
+# 2558. Take Gifts From the Richest Pile
+## Difficulty: Easy
+## Topics: Heap
+
+### Solution 1 - Heap
+```csharp
+public class Solution
+{
+    public long PickGifts(int[] gifts, int k)
+    {
+        var maxHeap = new PriorityQueue<int, int>(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+
+        foreach (var elem in gifts)
+        {
+            maxHeap.Enqueue(elem, elem);
+        }
+
+        for (int i = 0; i < k; i++)
+        {
+            long val = maxHeap.Dequeue();
+            int changedVal = (int)Math.Floor(Math.Sqrt(val));
+            maxHeap.Enqueue(changedVal, changedVal);
+        }
+
+        long result = 0;
+        while (maxHeap.Count > 0)
+        {
+            result += maxHeap.Dequeue();
+        }
+
+        return result;
+    }
+}
+```
+
 # 2594. Minimum Time to Repair Cars
 ## Difficulty: Medium
 ## Topics: Binary Search
@@ -4241,6 +4754,67 @@ public class Solution
         }
 
         return left;
+    }
+}
+```
+
+# 2974. Minimum Number Game
+## Difficulty: Easy
+## Topics: Heap, Sorting
+
+### Solution 2 - Sort the array and each iteration take a pair
+```csharp
+public class Solution
+{
+    public int[] NumberGame(int[] nums)
+    {
+        Array.Sort(nums);
+
+        int index1 = 0;
+        int index2 = 1;
+
+        int[] result = new int[nums.Length];
+        while (index2 < nums.Length)
+        {
+            result[index1] = nums[index2];
+            result[index2] = nums[index1];
+
+            index1 += 2;
+            index2 += 2;
+        }
+        
+        return result;
+    }
+}
+```
+
+### Solution 1 - Use a minheap to store the numbers
+
+```csharp
+public class Solution
+{
+    public int[] NumberGame(int[] nums)
+    {
+        var minHeap = new PriorityQueue<int, int>();
+
+        foreach (var elem in nums)
+        {
+            minHeap.Enqueue(elem, elem);
+        }
+
+        int[] result = new int[nums.Length];
+        int index = 0;
+
+        while (minHeap.Count > 0)
+        {
+            int alice = minHeap.Dequeue();
+            int bob = minHeap.Dequeue();
+
+            result[index++] = bob;
+            result[index++] = alice;
+        }
+
+        return result;
     }
 }
 ```
