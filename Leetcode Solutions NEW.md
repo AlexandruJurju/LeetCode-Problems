@@ -1150,6 +1150,29 @@ public int LongestConsecutive(int[] nums)
 }
 ```
 
+# 136. Single Number
+## Difficulty: Easy
+## Topics: Bit manipulation
+
+### Solution 1 - Using XOR
+- XOR'ing a number with itself will make the result 0 -> the number inside the array without a duplicate will not be removed
+
+```csharp
+public class Solution
+{
+    public int SingleNumber(int[] nums)
+    {
+        int result = 0;
+        foreach (var num in nums)
+        {
+            result ^= num;
+        }
+
+        return result;
+    }
+}
+```
+
 # 141. Linked List Cycle
 ## Difficulty: Easy
 ## Topics: Linked List, Two Pointers (Fast and Slow)
@@ -1432,6 +1455,57 @@ public class MinStack
 	public void Pop() => _stack.Pop();
 	public int Top() => _stack.Peek().Value;
 	public int GetMin() => _stack.Peek().Min;
+}
+```
+
+# 160. Intersection of Two Linked Lists
+## Difficulty: Easy
+## Topics: Linked List
+
+### Solution - Find lists lengths and adjust the starting point of the bigger list
+```csharp
+public class Solution
+{
+    public ListNode GetIntersectionNode(ListNode headA, ListNode headB)
+    {
+        // Find length of listA and listB
+        int lenA = ListLength(headA);
+        int lenB = ListLength(headB);
+
+        // Align the lists starting positions, move the starting point of the bigger list until the lists have the same length
+        // Will make it so the list with more elements will start in the same place as the smaller list
+        while (lenA > lenB)
+        {
+            headA = headA.next;
+            lenA--;
+        }
+
+        while (lenB > lenA)
+        {
+            headB = headB.next;
+            lenB--;
+        }
+        
+        while (headA != headB)
+        {
+            headA = headA.next;
+            headB = headB.next;
+        }
+
+        return headA;
+    }
+
+    private int ListLength(ListNode head)
+    {
+        int length = 0;
+        while (head != null)
+        {
+            head = head.next;
+            length++;
+        }
+
+        return length;
+    }
 }
 ```
 
